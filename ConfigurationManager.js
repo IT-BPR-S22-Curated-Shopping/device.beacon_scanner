@@ -31,7 +31,6 @@ function ConfigurationManager() {
         },
         scannerConfig: {
             range: settings.scannerConfig.range,
-            noiseFilterSamples: settings.scannerConfig.filterSamples,
             forgetBeaconMs: settings.scannerConfig.forgetBeaconMs,
             filters: {
                 appId: settings.scannerConfig.filters.appId,

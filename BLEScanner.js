@@ -3,10 +3,11 @@
     https://github.com/futomi/node-beacon-scanner
 */
 import BeaconScanner from "node-beacon-scanner"
+import Beacon from "./Beacon.js";
 
 function BLEScanner (configurationManager, uplinkHandler) {
     const scanner = new BeaconScanner();
-    const beacons = []
+    const beacons = new Map()
 
     const scan = () => scanner.startScan().then(() => {
         uplinkHandler.publish(configurationManager.getMqttConfig().topics.telemetry, 'Started to scan.')
@@ -15,39 +16,65 @@ function BLEScanner (configurationManager, uplinkHandler) {
         setTimeout(() => process.exit(1), 1000)
     });
 
-    scanner.onadvertisement = (advertisement) => {
-        if (advertisement.beaconType === 'iBeacon') {
-            const beaconUUID = advertisement.iBeacon.uuid.split('-')
+    const inRange = (beacon) => {
+        if (configurationManager.getScannerConfig().range.unit.toLowerCase() === 'rssi') {
+            return beacon.getRssi() >= configurationManager.getScannerConfig().range.sensitivity
+        }
+        else {
+            return beacon.getDistance() <= configurationManager.getScannerConfig().range.sensitivity
+        }
+    }
 
-            console.log(beaconUUID[0].toUpperCase())
+    const beaconFound = (advertisement) => {
+        let beacon = {}
+        if (beacons.has(advertisement.iBeacon.uuid)) {
+            beacon = beacons.get(advertisement.iBeacon.uuid)
+            beacon.addObservation(advertisement.iBeacon.txPower, advertisement.iBeacon.rssi)
+        }
+        else {
+            beacon = new Beacon(advertisement.iBeacon.uuid,
+                advertisement.address,
+                advertisement.iBeacon.major,
+                advertisement.iBeacon.minor)
+            beacon.addObservation(advertisement.iBeacon.txPower, advertisement.rssi)
+        }
 
-            if (configurationManager.getScannerConfig().filters.appId
-                && configurationManager.getScannerConfig().filters.companyId) {
-                if (beaconUUID[0].toUpperCase() === configurationManager.getAppId().toUpperCase()
-                    && beaconUUID[1].toUpperCase() === configurationManager.getCompanyId().toUpperCase()) {
-                    console.log('App and Company matched')
-                    console.log(advertisement)
-                }
-            }
-            else if (configurationManager.getScannerConfig().filters.appId) {
-                if (beaconUUID[0].toUpperCase() === configurationManager.getAppId().toUpperCase()) {
-                    console.log('app matched')
-                    console.log(advertisement)
-                }
-            }
-            else if (configurationManager.getScannerConfig().filters.companyId) {
-                if (beaconUUID[1].toUpperCase() === configurationManager.getCompanyId().toUpperCase()) {
-                    console.log('Company matched')
-                    console.log(advertisement)
-                }
-            }
-            else {
-                console.log('No filters applied')
-                console.log(advertisement)
+        if (inRange(beacon)) {
+            uplinkHandler.publish(configurationManager.getMqttConfig().topics.beacon, beacon.getState())
+        }
+        // clean beacons map
+    }
 
+    const filterBeacon = (advertisement) => {
+        const beaconUUID = advertisement.iBeacon.uuid.split('-')
+
+        if (configurationManager.getScannerConfig().filters.appId
+            && configurationManager.getScannerConfig().filters.companyId) {
+            if (beaconUUID[0].toUpperCase() === configurationManager.getAppId().toUpperCase()
+                && beaconUUID[1].toUpperCase() === configurationManager.getCompanyId().toUpperCase()) {
+                beaconFound(advertisement)
             }
         }
-    };
+        else if (configurationManager.getScannerConfig().filters.appId) {
+            if (beaconUUID[0].toUpperCase() === configurationManager.getAppId().toUpperCase()) {
+                beaconFound(advertisement)
+            }
+        }
+        else if (configurationManager.getScannerConfig().filters.companyId) {
+            if (beaconUUID[1].toUpperCase() === configurationManager.getCompanyId().toUpperCase()) {
+                beaconFound(advertisement)
+            }
+        }
+        else {
+            beaconFound(advertisement)
+        }
+    }
+
+    scanner.onadvertisement = (advertisement) => {
+        if (advertisement.beaconType === 'iBeacon') {
+            filterBeacon(advertisement)
+        }
+    }
 
     return { scan }
 }

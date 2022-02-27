@@ -1,25 +1,39 @@
+import { rssiToMeters , calculateRssi } from './BeaconUtils.js'
+import {KalmanFilter} from "kalman-filter";
 
-
-function Beacon(uuid, rssi, measuredPower) {
+function Beacon(uuid, mac, major, minor) {
+    const kFilter = new KalmanFilter()
     const state = {
         uuid: uuid,
-        mac: "None",
+        major: major,
+        minor: minor,
+        mac: mac,
         time: new Date(),
         updated: new Date(),
-        filteredRssi: rssi,
-        distance: -1,
-        observations: [rssi]
+        rssi: undefined,
+        distance: undefined,
+        observations: []
     }
-    return { state }
+    const getDistance = () => state.distance
+    const getRssi = () => state.rssi
+    const addObservation = (txPower, rssi) => {
+        if (state.observations.length === 0) {
+            state.rssi = rssi
+            state.observations.push(rssi)
+            state.distance = rssiToMeters(txPower, rssi)
+        }
+        else {
+            const cr = calculateRssi(state.observations[state.observations.length - 1], rssi)
+            state.observations.push(cr)
+            state.rssi = kFilter.filterAll(state.observations)
+            state.observations.pop()
+            state.distance = rssiToMeters(txPower, state.rssi)
+            state.observations.push(state.rssi)
+        }
+        state.updated = new Date()
+    }
+    const getState = () => JSON.stringify(state)
+    return { getDistance, getRssi, addObservation, getState }
 }
 
-function iBeacon() {
-    const state = {
-        ...Beacon,
-        major: 0,
-        minor: 0,
-    }
-    return { state }
-}
-
-export default iBeacon
+export default Beacon
