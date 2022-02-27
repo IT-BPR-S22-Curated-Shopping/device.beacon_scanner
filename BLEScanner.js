@@ -24,6 +24,15 @@ function BLEScanner (configurationManager, uplinkHandler) {
             return beacon.getDistance() <= configurationManager.getScannerConfig().range.sensitivity
         }
     }
+    
+    const removeOldBeacons = () => {
+        beacons.forEach((beacon) => {
+            if (beacon.updated.now() + configurationManager.getScannerConfig().forgetBeaconMs < Date.now())
+            {
+                beacons.delete(beacon.uuid)
+            }
+        })
+    }
 
     const beaconFound = (advertisement) => {
         let beacon = {}
@@ -44,9 +53,10 @@ function BLEScanner (configurationManager, uplinkHandler) {
             uplinkHandler.publish(configurationManager.getMqttConfig().topics.beacon, JSON.stringify(beacon.getState(), null, ' '))
         }
         else {
+            //TODO: Delete else statement
             console.log(JSON.stringify(beacon.getState(), null, 2))
         }
-        // clean beacons map
+        removeOldBeacons()
     }
 
     const filterBeacon = (advertisement) => {
