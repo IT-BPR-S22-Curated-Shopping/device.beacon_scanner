@@ -56,7 +56,6 @@ function BLEScanner (configurationManager, uplinkHandler) {
             //TODO: Delete else statement
             console.log(JSON.stringify(beacon.getState(), null, 2))
         }
-        removeOldBeacons()
     }
 
     const filterBeacon = (advertisement) => {
@@ -82,6 +81,7 @@ function BLEScanner (configurationManager, uplinkHandler) {
         else {
             beaconFound(advertisement)
         }
+        removeOldBeacons()
     }
 
     scanner.onadvertisement = (advertisement) => {
