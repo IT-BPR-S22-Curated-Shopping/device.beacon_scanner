@@ -19,22 +19,24 @@ function BLEScanner (configurationManager, uplinkHandler) {
         if (advertisement.beaconType === 'iBeacon') {
             const beaconUUID = advertisement.iBeacon.uuid.split('-')
 
+            console.log(beaconUUID[0].toUpperCase())
+
             if (configurationManager.getScannerConfig().filters.appId
                 && configurationManager.getScannerConfig().filters.companyId) {
-                if (beaconUUID[0] === configurationManager.getAppId()
-                    && beaconUUID[1] === configurationManager.getCompanyId()) {
+                if (beaconUUID[0].toUpperCase() === configurationManager.getAppId().toUpperCase()
+                    && beaconUUID[1].toUpperCase() === configurationManager.getCompanyId().toUpperCase()) {
                     console.log('App and Company matched')
                     console.log(advertisement)
                 }
             }
             else if (configurationManager.getScannerConfig().filters.appId) {
-                if (beaconUUID[0] === configurationManager.getAppId()) {
+                if (beaconUUID[0].toUpperCase() === configurationManager.getAppId().toUpperCase()) {
                     console.log('app matched')
                     console.log(advertisement)
                 }
             }
             else if (configurationManager.getScannerConfig().filters.companyId) {
-                if (beaconUUID[1] === configurationManager.getCompanyId()) {
+                if (beaconUUID[1].toUpperCase() === configurationManager.getCompanyId().toUpperCase()) {
                     console.log('Company matched')
                     console.log(advertisement)
                 }
