@@ -2,6 +2,8 @@ import settings from './local.settings.json' assert {type: "json"}
 
 function ConfigurationManager() {
     const state = {
+        appId: settings.appId,
+        companyId: settings.companyId,
         deviceId: settings.deviceId,
         mqttConfig: {
             url: `${settings.mqttConfig.protocol}://${settings.mqttConfig.host}:${settings.mqttConfig.port}`,
@@ -28,19 +30,23 @@ function ConfigurationManager() {
             }
         },
         scannerConfig: {
-            beaconTypes: settings.scannerConfig.beaconTypes,
             range: settings.scannerConfig.range,
             noiseFilterSamples: settings.scannerConfig.filterSamples,
             forgetBeaconMs: settings.scannerConfig.forgetBeaconMs,
-            filter: settings.scannerConfig.filters
+            filters: {
+                appId: settings.scannerConfig.filters.appId,
+                companyId: settings.scannerConfig.filters.companyId
+            }
         }
     }
+    const getAppId = () => state.appId
+    const getCompanyId = () => state.companyId
     const getDeviceId = () => state.deviceId
     const getMqttConfig = () => state.mqttConfig
     const getScannerConfig = () => state.scannerConfig
     const updateConfiguration = (config) => console.log(`Configuration update not implemented. Received: ${config}`)
 
-    return { getDeviceId, getMqttConfig, getScannerConfig, updateConfiguration }
+    return { getAppId, getCompanyId, getDeviceId, getMqttConfig, getScannerConfig, updateConfiguration }
 }
 
 export default ConfigurationManager
