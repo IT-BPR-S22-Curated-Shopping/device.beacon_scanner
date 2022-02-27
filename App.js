@@ -1,8 +1,8 @@
 import ConfigurationManager from "./ConfigurationManager.js";
-import MqttClient from "./MqttClient.js";
-import UpLinkHandler from "./UpLinkHandler.js"
-import DownLinkHandler from "./DownLinkHandler.js";
-import BLEScanner from "./BLEScanner.js";
+import MqttClient from "./mqtt/MqttClient.js";
+import UpLinkHandler from "./mqtt/UpLinkHandler.js"
+import DownLinkHandler from "./mqtt/DownLinkHandler.js";
+import BLEScanner from "./bluetooth/BLEScanner.js";
 
 const configManager = ConfigurationManager()
 const mqttClient = MqttClient(configManager.getMqttConfig())
@@ -16,7 +16,7 @@ mqttClient.on("error", (error) => {
 });
 
 mqttClient.on("connect", () => {
-    upLink.publish(configManager.getMqttConfig().topics.telemetry, 'MQTT connected.')
+    upLink.publish(configManager.getMqttConfig().topics.telemetry, 'mqtt connected.')
     mqttClient.subscribe(configManager.getMqttConfig().topics.config)
     beaconScanner.scan()
     upLink.publish(configManager.getMqttConfig().topics.status, "ONLINE")

@@ -1,6 +1,5 @@
 import { rssiToMeters , calculateRssi } from './BeaconUtils.js'
 
-
 function Beacon(uuid, mac, major, minor) {
     const state = {
         uuid: uuid,
