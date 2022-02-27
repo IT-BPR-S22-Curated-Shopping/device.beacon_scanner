@@ -7,8 +7,8 @@ function Beacon(uuid, mac, major, minor) {
         major: major,
         minor: minor,
         mac: mac,
-        time: new Date(),
-        updated: new Date(),
+        time: Date.now(),
+        updated: Date.now(),
         rssi: undefined,
         distance: undefined
     }
@@ -23,7 +23,7 @@ function Beacon(uuid, mac, major, minor) {
             state.rssi = calculateRssi(state.rssi, rssi)
             state.distance = rssiToMeters(txPower, state.rssi)
         }
-        state.updated = new Date()
+        state.updated = Date.now()
     }
     const getState = () => state
     return { getDistance, getRssi, addObservation, getState }

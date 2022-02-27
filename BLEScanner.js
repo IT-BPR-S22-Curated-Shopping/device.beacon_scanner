@@ -24,10 +24,10 @@ function BLEScanner (configurationManager, uplinkHandler) {
             return beacon.getDistance() <= configurationManager.getScannerConfig().range.sensitivity
         }
     }
-    
+
     const removeOldBeacons = () => {
         beacons.forEach((beacon) => {
-            if (beacon.updated.now() + configurationManager.getScannerConfig().forgetBeaconMs < Date.now())
+            if (beacon.updated + configurationManager.getScannerConfig().forgetBeaconMs < Date.now())
             {
                 beacons.delete(beacon.uuid)
             }
