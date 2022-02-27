@@ -26,10 +26,10 @@ function BLEScanner (configurationManager, uplinkHandler) {
     }
 
     const removeOldBeacons = () => {
-        beacons.forEach((beacon) => {
-            if (beacon.updated + configurationManager.getScannerConfig().forgetBeaconMs < Date.now())
+        beacons.forEach((value, key) => {
+            if (value.getUpdated() + configurationManager.getScannerConfig().forgetBeaconMs < Date.now())
             {
-                beacons.delete(beacon.uuid)
+                beacons.delete(key)
             }
         })
     }
@@ -50,7 +50,7 @@ function BLEScanner (configurationManager, uplinkHandler) {
         }
 
         if (inRange(beacon)) {
-            uplinkHandler.publish(configurationManager.getMqttConfig().topics.beacon, JSON.stringify(beacon.getState(), null, ' '))
+            uplinkHandler.publish(configurationManager.getMqttConfig().topics.beacon, JSON.stringify(beacon.getState(), null, 2))
         }
         else {
             //TODO: Delete else statement

@@ -25,8 +25,9 @@ function Beacon(uuid, mac, major, minor) {
         }
         state.updated = Date.now()
     }
+    const getUpdated = () => state.updated
     const getState = () => state
-    return { getDistance, getRssi, addObservation, getState }
+    return { getDistance, getRssi, addObservation, getUpdated, getState }
 }
 
 export default Beacon
