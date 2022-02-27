@@ -4,7 +4,7 @@
 */
 import BeaconScanner from "node-beacon-scanner"
 
-function BeaconScanner (configurationManager, uplinkHandler) {
+function BLEScanner (configurationManager, uplinkHandler) {
     const scanner = new BeaconScanner();
     const beacons = []
 
@@ -23,4 +23,4 @@ function BeaconScanner (configurationManager, uplinkHandler) {
     return { scan }
 }
 
-export default BeaconScanner
+export default BLEScanner

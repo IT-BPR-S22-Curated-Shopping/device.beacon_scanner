@@ -2,13 +2,13 @@ import ConfigurationManager from "./ConfigurationManager.js";
 import MqttClient from "./MqttClient.js";
 import UpLinkHandler from "./UpLinkHandler.js"
 import DownLinkHandler from "./DownLinkHandler.js";
-import BeaconScanner from "./BeaconScanner.js";
+import BLEScanner from "./BLEScanner.js";
 
 const configManager = ConfigurationManager()
 const mqttClient = MqttClient(configManager.getMqttConfig)
 const upLink = UpLinkHandler(mqttClient)
 DownLinkHandler(mqttClient, configManager)
-const beaconScanner = BeaconScanner(configManager, upLink)
+const beaconScanner = BLEScanner(configManager, upLink)
 
 mqttClient.on("error", (error) => {
     console.log("Can't connect" + error);
