@@ -12,6 +12,7 @@ function BLEScanner (configurationManager, uplinkHandler) {
         uplinkHandler.publish(configurationManager.getMqttConfig().topics.telemetry, 'Started to scan.')
     }).catch((error) => {
         uplinkHandler.publish(configurationManager.getMqttConfig().topics.telemetry, `Beacon scanner error: ${error}`)
+        setTimeout(() => process.exit(1), 1000)
     });
 
     scanner.onadvertisement = (advertisement) => {
