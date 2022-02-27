@@ -29,7 +29,7 @@ function BLEScanner (configurationManager, uplinkHandler) {
         let beacon = {}
         if (beacons.has(advertisement.iBeacon.uuid)) {
             beacon = beacons.get(advertisement.iBeacon.uuid)
-            beacon.addObservation(advertisement.iBeacon.txPower, advertisement.iBeacon.rssi)
+            beacon.addObservation(advertisement.iBeacon.txPower, advertisement.rssi)
         }
         else {
             beacon = new Beacon(advertisement.iBeacon.uuid,
@@ -37,13 +37,14 @@ function BLEScanner (configurationManager, uplinkHandler) {
                 advertisement.iBeacon.major,
                 advertisement.iBeacon.minor)
             beacon.addObservation(advertisement.iBeacon.txPower, advertisement.rssi)
+            beacons.set(advertisement.iBeacon.uuid, beacon)
         }
 
         if (inRange(beacon)) {
             uplinkHandler.publish(configurationManager.getMqttConfig().topics.beacon, JSON.stringify(beacon.getState(), null, ' '))
         }
         else {
-            console.log(JSON.stringify(beacon.getState(), null, ' '))
+            console.log(JSON.stringify(beacon.getState(), null, 2))
         }
         // clean beacons map
     }
