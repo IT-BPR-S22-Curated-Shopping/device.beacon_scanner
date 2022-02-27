@@ -40,7 +40,10 @@ function BLEScanner (configurationManager, uplinkHandler) {
         }
 
         if (inRange(beacon)) {
-            uplinkHandler.publish(configurationManager.getMqttConfig().topics.beacon, beacon.getState())
+            uplinkHandler.publish(configurationManager.getMqttConfig().topics.beacon, JSON.stringify(beacon.getState(), null, ' '))
+        }
+        else {
+            console.log(JSON.stringify(beacon.getState(), null, ' '))
         }
         // clean beacons map
     }

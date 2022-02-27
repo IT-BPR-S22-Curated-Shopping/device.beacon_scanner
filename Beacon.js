@@ -1,6 +1,8 @@
 import { rssiToMeters , calculateRssi } from './BeaconUtils.js'
+import {KalmanFilter} from "kalman-filter";
 
 function Beacon(uuid, mac, major, minor) {
+    const kFilter = new KalmanFilter()
     const state = {
         uuid: uuid,
         major: major,
@@ -21,9 +23,12 @@ function Beacon(uuid, mac, major, minor) {
             state.distance = rssiToMeters(txPower, rssi)
         }
         else {
-            state.rssi = calculateRssi(state.observations[state.observations.length - 1], rssi)
-            state.observations.push(state.rssi)
+            const cr = calculateRssi(state.observations[state.observations.length - 1], rssi)
+            state.observations.push(cr)
+            state.rssi = kFilter.filterAll(state.observations)
             state.distance = rssiToMeters(txPower, state.rssi)
+            state.observations.pop()
+            state.observations.push(state.rssi)
         }
         state.updated = new Date()
     }
