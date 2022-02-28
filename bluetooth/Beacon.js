@@ -1,4 +1,4 @@
-import { calculateRssi } from './BeaconUtils.js'
+import { calculateRssi, rssiToMeters } from './BeaconUtils.js'
 
 function Beacon(uuid, mac, major, minor, rssi, distance) {
     const state = {
@@ -9,11 +9,21 @@ function Beacon(uuid, mac, major, minor, rssi, distance) {
         time: Date.now(),
         updated: Date.now(),
         rssi: rssi,
-        distance: distance
+        distance: distance,
+        observations: [ rssi ]
     }
-    const addObservation = (rssi, distance) => {
-        state.rssi = calculateRssi(state.rssi, rssi)
-        state.distance = distance
+    const addObservation = (rssi, txPower) => {
+        if (state.observations.length === 5) {
+            state.observations.shift()
+        }
+        state.observations.push(rssi)
+        let rssiSum = 0
+        state.observations.forEach((obs) => {
+            rssiSum += obs
+        })
+        const rssiAvg = rssiSum / 5
+        state.rssi = calculateRssi(rssiAvg, rssi)
+        state.distance = rssiToMeters(txPower, state.rssi)
         state.updated = Date.now()
     }
     const getUpdated = () => state.updated
