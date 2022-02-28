@@ -1,4 +1,4 @@
-import settings from './local.settings.json' assert {type: "json"}
+import settings from '../local.settings.json' assert {type: "json"}
 
 function ConfigurationManager() {
     const state = {
@@ -30,9 +30,9 @@ function ConfigurationManager() {
             }
         },
         scannerConfig: {
-            range: settings.scannerConfig.range,
             forgetBeaconMs: settings.scannerConfig.forgetBeaconMs,
             filters: {
+                range: settings.scannerConfig.range,
                 appId: settings.scannerConfig.filters.appId,
                 companyId: settings.scannerConfig.filters.companyId
             }

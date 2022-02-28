@@ -4,26 +4,21 @@
 */
 import BeaconScanner from "node-beacon-scanner"
 import Beacon from "./Beacon.js";
+import { rssiToMeters } from "./BeaconUtils.js"
+import { level, telemetryMessage} from "../utils/TelemetryMessage.js";
 
 function BLEScanner (configurationManager, uplinkHandler) {
     const scanner = new BeaconScanner();
     const beacons = new Map()
 
     const scan = () => scanner.startScan().then(() => {
-        uplinkHandler.publish(configurationManager.getMqttConfig().topics.telemetry, 'Started to scan.')
+        uplinkHandler.publish(configurationManager.getMqttConfig().topics.telemetry,
+            telemetryMessage(level.info, 'Started to scan.'))
     }).catch((error) => {
-        uplinkHandler.publish(configurationManager.getMqttConfig().topics.telemetry, `Beacon scanner error: ${error}`)
+        uplinkHandler.publish(configurationManager.getMqttConfig().topics.telemetry,
+            telemetryMessage(level.error, `Beacon scanner: ${error}`))
         setTimeout(() => process.exit(1), 1000)
     });
-
-    const inRange = (beacon) => {
-        if (configurationManager.getScannerConfig().range.unit.toLowerCase() === 'rssi') {
-            return beacon.getRssi() >= configurationManager.getScannerConfig().range.sensitivity
-        }
-        else {
-            return beacon.getDistance() <= configurationManager.getScannerConfig().range.sensitivity
-        }
-    }
 
     const removeOldBeacons = () => {
         beacons.forEach((value, key) => {
@@ -38,56 +33,69 @@ function BLEScanner (configurationManager, uplinkHandler) {
         let beacon = {}
         if (beacons.has(advertisement.iBeacon.uuid)) {
             beacon = beacons.get(advertisement.iBeacon.uuid)
-            beacon.addObservation(advertisement.iBeacon.txPower, advertisement.rssi)
+            beacon.addObservation(advertisement.rssi, advertisement.distance)
         }
         else {
             beacon = new Beacon(advertisement.iBeacon.uuid,
                 advertisement.address,
                 advertisement.iBeacon.major,
-                advertisement.iBeacon.minor)
-            beacon.addObservation(advertisement.iBeacon.txPower, advertisement.rssi)
+                advertisement.iBeacon.minor,
+                advertisement.rssi,
+                advertisement.distance)
             beacons.set(advertisement.iBeacon.uuid, beacon)
         }
 
-        if (inRange(beacon)) {
-            uplinkHandler.publish(configurationManager.getMqttConfig().topics.beacon, JSON.stringify(beacon.getState(), null, 2))
-        }
-        else {
-            //TODO: Delete else statement
-            console.log(JSON.stringify(beacon.getState(), null, 2))
-        }
+        uplinkHandler.publish(configurationManager.getMqttConfig().topics.beacon, beacon.getState())
     }
 
-    const filterBeacon = (advertisement) => {
+    const isValidAppId = (appId) => appId.toUpperCase() === configurationManager.getAppId().toUpperCase()
+
+    const isValidCompanyId = (companyId) => companyId.toUpperCase() === configurationManager.getCompanyId().toUpperCase()
+
+    const isValidUUID = (advertisement) => {
         const beaconUUID = advertisement.iBeacon.uuid.split('-')
 
         if (configurationManager.getScannerConfig().filters.appId
             && configurationManager.getScannerConfig().filters.companyId) {
-            if (beaconUUID[0].toUpperCase() === configurationManager.getAppId().toUpperCase()
-                && beaconUUID[1].toUpperCase() === configurationManager.getCompanyId().toUpperCase()) {
-                beaconFound(advertisement)
-            }
+            return isValidAppId(beaconUUID[0]) && isValidCompanyId(beaconUUID[1])
         }
         else if (configurationManager.getScannerConfig().filters.appId) {
-            if (beaconUUID[0].toUpperCase() === configurationManager.getAppId().toUpperCase()) {
-                beaconFound(advertisement)
-            }
+            return isValidAppId(beaconUUID[0])
         }
         else if (configurationManager.getScannerConfig().filters.companyId) {
-            if (beaconUUID[1].toUpperCase() === configurationManager.getCompanyId().toUpperCase()) {
-                beaconFound(advertisement)
-            }
+            return isValidCompanyId(beaconUUID[1])
         }
         else {
-            beaconFound(advertisement)
+            return true
         }
-        removeOldBeacons()
+    }
+
+    const inRange = (advertisement) => {
+        switch (configurationManager.getScannerConfig().filters.range.unit.toLowerCase()) {
+            case 'rssi':
+                return advertisement.rssi >= configurationManager.getScannerConfig().filters.range.sensitivity
+            case 'm':
+                return advertisement.distance <= configurationManager.getScannerConfig().filters.range.sensitivity
+            default:
+                uplinkHandler.publish(configurationManager.getMqttConfig().topics.telemetry,
+                    telemetryMessage(level.error, 'Range unit not configured.! Options: ["rssi", "m"]'))
+        }
     }
 
     scanner.onadvertisement = (advertisement) => {
         if (advertisement.beaconType === 'iBeacon') {
-            filterBeacon(advertisement)
+            advertisement.distance = rssiToMeters(advertisement.iBeacon.txPower, advertisement.rssi)
+            if (inRange(advertisement)) {
+                if (isValidUUID(advertisement)) {
+                    beaconFound(advertisement)
+                }
+            }
+            else {
+                //TODO: delete else statement
+                console.log(JSON.stringify(advertisement, null, 2))
+            }
         }
+        removeOldBeacons()
     }
 
     return { scan }
