@@ -25,6 +25,7 @@ function BLEScanner (configurationManager, uplinkHandler) {
             if (value.getUpdated() + configurationManager.getScannerConfig().forgetBeaconMs < Date.now())
             {
                 beacons.delete(key)
+                console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!Beacon deleted' + key)
             }
         })
     }
@@ -45,8 +46,9 @@ function BLEScanner (configurationManager, uplinkHandler) {
             beacons.set(advertisement.iBeacon.uuid, beacon)
         }
 
-        if (beacon.getNoOfObservations() > 3) {
+        if (beacon.getNoOfObservations() === 10) {
             uplinkHandler.publish(configurationManager.getMqttConfig().topics.beacon, beacon.getState())
+            console.log('-> -> -> -> -> -> Sending beacon with rssi ' + beacon.getState().rssi)
         }
 
     }
@@ -86,19 +88,20 @@ function BLEScanner (configurationManager, uplinkHandler) {
     }
 
     scanner.onadvertisement = (advertisement) => {
+        removeOldBeacons()
         if (advertisement.beaconType === 'iBeacon') {
             advertisement.distance = rssiToMeters(advertisement.iBeacon.txPower, advertisement.rssi)
             if (inRange(advertisement)) {
-                if (isValidUUID(advertisement)) {
+                if (isValidUUID(advertisement.iBeacon.uuid)) {
+                    console.log('found beacon: ' + advertisement.rssi)
                     beaconFound(advertisement)
                 }
             }
             else {
                 //TODO: delete else statement
-                console.log(JSON.stringify(advertisement, null, 2))
+                console.log('*************************************OUT OF RANGE******************** ' + advertisement.rssi)
             }
         }
-        removeOldBeacons()
     }
 
     return { scan }

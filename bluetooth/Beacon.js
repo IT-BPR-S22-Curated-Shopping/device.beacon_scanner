@@ -18,6 +18,7 @@ function Beacon(uuid, mac, major, minor, rssi, distance) {
             rssiSum += obs
         })
         const rssiAvg = rssiSum / state.observations.length
+        console.log('last Avg: ' + rssiAvg)
         state.rssi = calculateRssi(rssiAvg, rssi)
         state.distance = rssiToMeters(txPower, state.rssi)
         if (state.observations.length === 10) { //TODO: add obs sample # to settings / configManager
