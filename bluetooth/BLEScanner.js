@@ -45,15 +45,18 @@ function BLEScanner (configurationManager, uplinkHandler) {
             beacons.set(advertisement.iBeacon.uuid, beacon)
         }
 
-        uplinkHandler.publish(configurationManager.getMqttConfig().topics.beacon, beacon.getState())
+        if (beacon.getNoOfObservations() > 3) {
+            uplinkHandler.publish(configurationManager.getMqttConfig().topics.beacon, beacon.getState())
+        }
+
     }
 
     const isValidAppId = (appId) => appId.toUpperCase() === configurationManager.getAppId().toUpperCase()
 
     const isValidCompanyId = (companyId) => companyId.toUpperCase() === configurationManager.getCompanyId().toUpperCase()
 
-    const isValidUUID = (advertisement) => {
-        const beaconUUID = advertisement.iBeacon.uuid.split('-')
+    const isValidUUID = (uuid) => {
+        const beaconUUID = uuid.split('-')
 
         if (configurationManager.getScannerConfig().filters.appId
             && configurationManager.getScannerConfig().filters.companyId) {

@@ -20,15 +20,16 @@ function Beacon(uuid, mac, major, minor, rssi, distance) {
         const rssiAvg = rssiSum / state.observations.length
         state.rssi = calculateRssi(rssiAvg, rssi)
         state.distance = rssiToMeters(txPower, state.rssi)
-        if (state.observations.length === 10) {
+        if (state.observations.length === 10) { //TODO: add obs sample # to settings / configManager
             state.observations.shift()
         }
         state.observations.push(state.rssi)
         state.updated = Date.now()
     }
     const getUpdated = () => state.updated
+    const getNoOfObservations = () => state.observations.length
     const getState = () => state
-    return { addObservation, getUpdated, getState }
+    return { addObservation, getUpdated, getState, getNoOfObservations }
 }
 
 export default Beacon
