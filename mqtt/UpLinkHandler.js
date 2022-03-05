@@ -1,10 +1,11 @@
 import { telemetryMessage } from "../utils/TelemetryMessage.js";
 
-function UpLinkHandler(mqtt) {
-    const sendStatus = (msg) => mqtt.publish(mqtt.topics().status, msg)
-    const sendTelemetry = (level, msg) => mqtt.publish(mqtt.topics().telemetry,
+function UpLinkHandler(mqttClient, topics) {
+    const publish = (topic, msg) => mqttClient.publish(topic, JSON.stringify(msg, null, 2))
+    const sendStatus = (msg) => publish(topics.status, msg)
+    const sendTelemetry = (level, msg) => publish(topics.telemetry,
         telemetryMessage(level, msg))
-    const sendBeacon = (beacon) => mqtt.publish(mqtt.topics().beacon, beacon)
+    const sendBeacon = (beacon) => publish(topics.beacon, beacon)
 
     return { sendStatus, sendTelemetry, sendBeacon }
 }
