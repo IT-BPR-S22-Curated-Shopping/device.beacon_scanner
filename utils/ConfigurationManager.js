@@ -54,8 +54,7 @@ function ConfigurationManager() {
     const updateConfiguration = (payload, telemetryCallBack) => {
         switch (payload.type) {
             case 'mqtt':
-                state.mqttConfig = payload.config
-                telemetryCallBack(level.info, 'MQTT configuration updated.')
+                telemetryCallBack(level.warning, 'MQTT configuration update not implemented.')
                 break
             case 'scanner':
                 state.scannerConfig = payload.config

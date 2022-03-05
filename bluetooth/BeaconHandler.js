@@ -2,7 +2,7 @@ import Beacon from "./Beacon.js";
 import { rssiToMeters } from "./BeaconUtils.js";
 import {level} from "../utils/TelemetryMessage.js";
 
-function BeaconHandler (scanner, configuration, upLinkHandler) {
+function BeaconHandler (scanner, configManager, upLinkHandler) {
     const beacons = new Map()
 
     const beaconFound = (advertisement) => {
@@ -12,7 +12,7 @@ function BeaconHandler (scanner, configuration, upLinkHandler) {
             beacon = beacons.get(advertisement.iBeacon.uuid)
             beacon.addObservation(advertisement.rssi,
                 advertisement.iBeacon.txPower,
-                configuration.noiseFilter.lastRssiWeight)
+                configManager.getScannerConfig().noiseFilter.lastRssiWeight)
         }
         else {
             beacon = new Beacon(advertisement.iBeacon.uuid,
@@ -21,33 +21,34 @@ function BeaconHandler (scanner, configuration, upLinkHandler) {
                 advertisement.iBeacon.minor,
                 advertisement.rssi,
                 advertisement.distance,
-                configuration.noiseFilter.observations.max)
+                configManager.getScannerConfig().noiseFilter.observations.max)
             beacons.set(advertisement.iBeacon.uuid, beacon)
         }
 
-        if (beacon.getNoOfObservations() >= configuration.noiseFilter.observations.min) {
-            if (inRange(beacon.getState().rssi, beacon.getState().distance, configuration.range.targetSensitivity)) {
+        if (beacon.getNoOfObservations() >= configManager.getScannerConfig().noiseFilter.observations.min) {
+            if (inRange(beacon.getState().rssi, beacon.getState().distance,
+                configManager.getScannerConfig().range.targetSensitivity)) {
                 upLinkHandler.sendBeacon(beacon.getState())
                 console.log('-> -> -> -> -> -> Sending beacon with rssi ' + beacon.getState().rssi)
             }
         }
     }
 
-    const isValidAppId = (appId) => appId.toUpperCase() === configuration.appId.toUpperCase()
+    const isValidAppId = (appId) => appId.toUpperCase() === configManager.getScannerConfig().appId.toUpperCase()
 
-    const isValidCompanyId = (companyId) => companyId.toUpperCase() === configuration.companyId.toUpperCase()
+    const isValidCompanyId = (companyId) => companyId.toUpperCase() === configManager.getScannerConfig().companyId.toUpperCase()
 
     const isValidUUID = (uuid) => {
         const parts = uuid.split('-')
 
-        if (configuration.filter.onAppId
-            && configuration.filter.onCompanyId) {
+        if (configManager.getScannerConfig().filter.onAppId
+            && configManager.getScannerConfig().filter.onCompanyId) {
             return isValidAppId(parts[0]) && isValidCompanyId(parts[1])
         }
-        else if (configuration.filter.onAppId) {
+        else if (configManager.getScannerConfig().filter.onAppId) {
             return isValidAppId(parts[0])
         }
-        else if (configuration.filter.onCompanyId) {
+        else if (configManager.getScannerConfig().filter.onCompanyId) {
             return isValidCompanyId(parts[1])
         }
         else {
@@ -56,7 +57,7 @@ function BeaconHandler (scanner, configuration, upLinkHandler) {
     }
 
     const inRange = (rssi, distance, sensitivity) => {
-        switch (configuration.range.unit.toLowerCase()) {
+        switch (configManager.getScannerConfig().range.unit.toLowerCase()) {
             case 'rssi':
                 return rssi >= sensitivity
             case 'm':
@@ -69,7 +70,7 @@ function BeaconHandler (scanner, configuration, upLinkHandler) {
     const handleIBeacon = (advertisement) => {
         advertisement.distance = rssiToMeters(advertisement.iBeacon.txPower, advertisement.rssi)
         if (isValidUUID(advertisement.iBeacon.uuid)) {
-            if (inRange(advertisement.rssi, advertisement.distance, configuration.range.detectSensitivity)) {
+            if (inRange(advertisement.rssi, advertisement.distance, configManager.getScannerConfig().range.detectSensitivity)) {
                 beaconFound(advertisement)
                 console.log('Beacon found rssi' + advertisement.rssi)
             }
@@ -82,7 +83,7 @@ function BeaconHandler (scanner, configuration, upLinkHandler) {
 
     const removeOldBeacons = () => {
         beacons.forEach((value, key) => {
-            if (value.getUpdated() + configuration.forgetBeaconMs < Date.now())
+            if (value.getUpdated() + configManager.getScannerConfig().forgetBeaconMs < Date.now())
             {
                 beacons.delete(key)
                 console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!Beacon deleted' + key)

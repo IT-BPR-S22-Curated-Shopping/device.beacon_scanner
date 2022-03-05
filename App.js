@@ -15,7 +15,7 @@ const mqttClient = MqttClient(configManager.getMqttConfig())
 const upLinkHandler = UpLinkHandler(mqttClient, configManager.getMqttConfig().topics)
 const scanner = new BeaconScanner();
 DownLinkHandler(mqttClient, configManager, upLinkHandler)
-BeaconHandler(scanner, configManager.getScannerConfig(), upLinkHandler)
+BeaconHandler(scanner, configManager, upLinkHandler)
 
 mqttClient.on("error", (error) => {
     console.log("Can't connect" + error);
