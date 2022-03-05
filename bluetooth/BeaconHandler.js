@@ -71,6 +71,7 @@ function BeaconHandler (scanner, configuration, upLinkHandler) {
         if (isValidUUID(advertisement.iBeacon.uuid)) {
             if (inRange(advertisement, configuration.range.detectSensitivity)) {
                 beaconFound(advertisement)
+                console.log('Beacon found rssi' + advertisement.rssi)
             }
             else {
                 //TODO: delete else statement
