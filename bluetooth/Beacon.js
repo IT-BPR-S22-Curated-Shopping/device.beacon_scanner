@@ -20,12 +20,12 @@ function Beacon(uuid, mac, major, minor, rssi, distance, maxObservations) {
         })
         const rssiAvg = rssiSum / state.observations.length
         console.log('last Avg: ' + rssiAvg)
-        state.rssi = calculateRssi(rssiAvg, rssi)
+        state.rssi = calculateRssi(rssiAvg, rssi, lastRssiWeight)
         if (state.observations.length === maxObservations) {
             state.observations.shift()
         }
         state.observations.push(state.rssi)
-        state.distance = rssiToMeters(txPower, state.rssi, lastRssiWeight)
+        state.distance = rssiToMeters(txPower, state.rssi)
         state.updated = Date.now()
     }
     const getUpdated = () => state.updated

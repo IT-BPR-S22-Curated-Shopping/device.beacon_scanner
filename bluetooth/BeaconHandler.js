@@ -20,13 +20,13 @@ function BeaconHandler (scanner, configuration, upLinkHandler) {
                 advertisement.iBeacon.major,
                 advertisement.iBeacon.minor,
                 advertisement.rssi,
-                rssiToMeters(advertisement.iBeacon.txPower, advertisement.rssi),
+                advertisement.distance,
                 configuration.noiseFilter.observations.max)
             beacons.set(advertisement.iBeacon.uuid, beacon)
         }
 
-        if (beacon.getNoOfObservations() > configuration.noiseFilter.observations.min) {
-            if (inRange(beacon, configuration.range.targetSensitivity)) {
+        if (beacon.getNoOfObservations() >= configuration.noiseFilter.observations.min) {
+            if (inRange(beacon.getState().rssi, beacon.getState().distance, configuration.range.targetSensitivity)) {
                 upLinkHandler.sendBeacon(beacon.getState())
                 console.log('-> -> -> -> -> -> Sending beacon with rssi ' + beacon.getState().rssi)
             }
@@ -55,12 +55,12 @@ function BeaconHandler (scanner, configuration, upLinkHandler) {
         }
     }
 
-    const inRange = (beacon, sensitivity) => {
+    const inRange = (rssi, distance, sensitivity) => {
         switch (configuration.range.unit.toLowerCase()) {
             case 'rssi':
-                return beacon.rssi >= sensitivity
+                return rssi >= sensitivity
             case 'm':
-                return beacon.distance <= sensitivity
+                return distance <= sensitivity
             default:
                 upLinkHandler.sendTelemetry(level.error, 'Range unit not configured.! Options: ["rssi", "m"]')
         }
@@ -69,7 +69,7 @@ function BeaconHandler (scanner, configuration, upLinkHandler) {
     const handleIBeacon = (advertisement) => {
         advertisement.distance = rssiToMeters(advertisement.iBeacon.txPower, advertisement.rssi)
         if (isValidUUID(advertisement.iBeacon.uuid)) {
-            if (inRange(advertisement, configuration.range.detectSensitivity)) {
+            if (inRange(advertisement.rssi, advertisement.distance, configuration.range.detectSensitivity)) {
                 beaconFound(advertisement)
                 console.log('Beacon found rssi' + advertisement.rssi)
             }
