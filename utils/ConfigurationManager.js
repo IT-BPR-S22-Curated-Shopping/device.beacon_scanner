@@ -62,7 +62,7 @@ function ConfigurationManager() {
                 telemetryCallBack(level.info, 'Scanner configuration updated.')
                 break
             default:
-                telemetryCallBack(level.error, `Unknown configuration type received: ${payload}`)
+                telemetryCallBack(level.warning, `Unknown configuration type received: ${payload}`)
                 break
         }
     }
