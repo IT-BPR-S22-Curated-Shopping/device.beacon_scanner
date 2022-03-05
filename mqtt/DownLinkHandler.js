@@ -1,9 +1,9 @@
 import { level } from "../utils/TelemetryMessage.js";
 
-function DownLinkHandler(mqttClient, configurationManager, upLinkHandler) {
-    mqttClient.on('message', (topic, message) => {
+function DownLinkHandler(mqtt, configurationManager, upLinkHandler) {
+    mqtt.client.on('message', (topic, message) => {
         switch (topic) {
-            case mqttClient.topics().config:
+            case mqtt.topics().config:
                 configurationManager.updateConfiguration(message)
                 break
             default:

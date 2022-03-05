@@ -2,28 +2,29 @@
   Libraries used:
     https://github.com/futomi/node-beacon-scanner
 */
+import ConfigurationManager from "./utils/ConfigurationManager.js";
 import BeaconScanner from "node-beacon-scanner"
-import MqttClient from "./mqtt/MqttClient.js";
+import Mqtt from "./mqtt/Mqtt.js";
 import UpLinkHandler from "./mqtt/UpLinkHandler.js"
 import DownLinkHandler from "./mqtt/DownLinkHandler.js";
 import BeaconHandler from "./bluetooth/BeaconHandler.js";
 import { level } from "./utils/TelemetryMessage.js";
 
 const configManager = ConfigurationManager()
-const mqttClient = MqttClient(configManager.getMqttConfig())
-const upLinkHandler = UpLinkHandler(mqttClient)
+const mqtt = Mqtt(configManager.getMqttConfig())
+const upLinkHandler = UpLinkHandler(mqtt)
 const scanner = new BeaconScanner();
-DownLinkHandler(mqttClient, configManager, upLinkHandler)
+DownLinkHandler(mqtt, configManager, upLinkHandler)
 BeaconHandler(scanner, configManager.getScannerConfig())
 
-mqttClient.on("error", (error) => {
+mqtt.client.on("error", (error) => {
     console.log("Can't connect" + error);
     process.exit(1)
 });
 
-mqttClient.on("connect", () => {
+mqtt.client.on("connect", () => {
     upLinkHandler.sendTelemetry(level.info, 'MQTT connected.')
-    mqttClient.subscribe(mqttClient.topics.config)
+    mqtt.client.subscribe(mqtt.topics.config)
     scanner.startScan().then((uplinkHandler) => {
         uplinkHandler.sendTelemetry(level.info, 'Started to scan.')
     }).catch((error, uplinkHandler) => {
