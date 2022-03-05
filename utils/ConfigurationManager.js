@@ -1,4 +1,5 @@
 import settings from '../local.settings.json' assert {type: "json"}
+import { level } from "./TelemetryMessage.js";
 
 function ConfigurationManager() {
     const state = {
@@ -50,7 +51,21 @@ function ConfigurationManager() {
     }
     const getMqttConfig = () => state.mqttConfig
     const getScannerConfig = () => state.scannerConfig
-    const updateConfiguration = (config) => console.log(`Configuration update not implemented. Received: ${config}`)
+    const updateConfiguration = (payload, telemetryCallBack) => {
+        switch (payload.type) {
+            case 'mqtt':
+                state.mqttConfig = payload.config
+                telemetryCallBack(level.info, 'MQTT configuration updated.')
+                break
+            case 'scanner':
+                state.scannerConfig = payload.config
+                telemetryCallBack(level.info, 'Scanner configuration updated.')
+                break
+            default:
+                telemetryCallBack(level.error, `Unknown configuration type received: ${payload}`)
+                break
+        }
+    }
 
     return { getMqttConfig, getScannerConfig, updateConfiguration }
 }
