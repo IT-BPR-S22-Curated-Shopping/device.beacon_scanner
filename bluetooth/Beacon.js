@@ -1,6 +1,6 @@
-import { calculateRssi, rssiToMeters } from './BeaconUtils.js'
+import { rssiToMeters } from './BeaconUtils.js'
 
-function Beacon(uuid, mac, major, minor, rssi, distance) {
+function Beacon(uuid, mac, major, minor, rssi, distance, maxObservations) {
     const state = {
         uuid: uuid,
         major: major,
@@ -12,7 +12,8 @@ function Beacon(uuid, mac, major, minor, rssi, distance) {
         distance: distance,
         observations: [ rssi ]
     }
-    const addObservation = (rssi, txPower) => {
+    const calculateRssi = (lastRssi, currentRssi, alpha) => alpha * lastRssi + (1 - alpha) * currentRssi
+    const addObservation = (rssi, txPower, lastRssiWeight) => {
         let rssiSum = 0
         state.observations.forEach((obs) => {
             rssiSum += obs
@@ -20,11 +21,11 @@ function Beacon(uuid, mac, major, minor, rssi, distance) {
         const rssiAvg = rssiSum / state.observations.length
         console.log('last Avg: ' + rssiAvg)
         state.rssi = calculateRssi(rssiAvg, rssi)
-        state.distance = rssiToMeters(txPower, state.rssi)
-        if (state.observations.length === 10) { //TODO: add obs sample # to settings / configManager
+        if (state.observations.length === maxObservations) {
             state.observations.shift()
         }
         state.observations.push(state.rssi)
+        state.distance = rssiToMeters(txPower, state.rssi, lastRssiWeight)
         state.updated = Date.now()
     }
     const getUpdated = () => state.updated

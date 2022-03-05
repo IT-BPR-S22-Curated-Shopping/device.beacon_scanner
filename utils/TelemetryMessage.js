@@ -1,6 +1,7 @@
 export const level = {
-    error: "Error",
-    info: "Info"
+    info: "info",
+    warning: "warning",
+    error: "error"
 }
 
 export const telemetryMessage = (lvl, msg) => {

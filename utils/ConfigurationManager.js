@@ -2,9 +2,6 @@ import settings from '../local.settings.json' assert {type: "json"}
 
 function ConfigurationManager() {
     const state = {
-        appId: settings.appId,
-        companyId: settings.companyId,
-        deviceId: settings.deviceId,
         mqttConfig: {
             url: `${settings.mqttConfig.protocol}://${settings.mqttConfig.host}:${settings.mqttConfig.port}`,
             topics: {
@@ -30,22 +27,32 @@ function ConfigurationManager() {
             }
         },
         scannerConfig: {
+            appId: settings.appId,
+            companyId: settings.companyId,
             forgetBeaconMs: settings.scannerConfig.forgetBeaconMs,
-            filters: {
-                range: settings.scannerConfig.range,
-                appId: settings.scannerConfig.filters.appId,
-                companyId: settings.scannerConfig.filters.companyId
+            range: {
+                unit: settings.scannerConfig.range.unit,
+                detectSensitivity: settings.scannerConfig.range.detectSensitivity,
+                targetSensitivity: settings.scannerConfig.range.targetSensitivity
+            },
+            noiseFilter: {
+                observations: {
+                    min: 1,
+                    max: 10,
+                },
+                lastRssiWeight: 0.4
+            },
+            filter: {
+                onAppId: settings.scannerConfig.filter.onAppId,
+                onCompanyId: settings.scannerConfig.filter.onCompanyId
             }
         }
     }
-    const getAppId = () => state.appId
-    const getCompanyId = () => state.companyId
-    const getDeviceId = () => state.deviceId
     const getMqttConfig = () => state.mqttConfig
     const getScannerConfig = () => state.scannerConfig
     const updateConfiguration = (config) => console.log(`Configuration update not implemented. Received: ${config}`)
 
-    return { getAppId, getCompanyId, getDeviceId, getMqttConfig, getScannerConfig, updateConfiguration }
+    return { getMqttConfig, getScannerConfig, updateConfiguration }
 }
 
 export default ConfigurationManager
