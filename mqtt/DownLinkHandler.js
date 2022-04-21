@@ -1,4 +1,4 @@
-import { level } from "../utils/TelemetryMessage.js";
+import { level } from "../utils/MessageLevels.js";
 
 function DownLinkHandler(mqttClient, configurationManager, upLinkHandler) {
     mqttClient.on('message', (topic, message) => {

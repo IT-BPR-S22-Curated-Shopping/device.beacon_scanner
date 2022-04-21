@@ -1,5 +1,5 @@
 import settings from '../local.settings.json' assert {type: "json"}
-import { level } from "./TelemetryMessage.js";
+import { level } from "./MessageLevels.js";
 
 function ConfigurationManager() {
     const state = {

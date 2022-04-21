@@ -1,6 +1,7 @@
 import Beacon from "./Beacon.js";
 import { rssiToMeters } from "./BeaconUtils.js";
-import {level} from "../utils/TelemetryMessage.js";
+import {level} from "../utils/MessageLevels.js";
+import { logToConsole } from "../utils/ConsoleLogger.js";
 
 function BeaconHandler (scanner, configManager, upLinkHandler) {
     const beacons = new Map()
@@ -29,18 +30,18 @@ function BeaconHandler (scanner, configManager, upLinkHandler) {
             if (inRange(beacon.getState().rssi, beacon.getState().distance,
                 configManager.getScannerConfig().range.targetSensitivity)) {
                 upLinkHandler.sendBeacon(beacon.getState())
-                console.log('-> -> -> -> -> -> Sending beacon with rssi ' + beacon.getState().rssi)
+                logToConsole(level.debug, `Sending beacon with rssi: ${beacon.getState().rssi}`)
             }
         }
     }
-
+    
     const isValidAppId = (appId) => appId.toUpperCase() === configManager.getScannerConfig().appId.toUpperCase()
-
+    
     const isValidCompanyId = (companyId) => companyId.toUpperCase() === configManager.getScannerConfig().companyId.toUpperCase()
-
+    
     const isValidUUID = (uuid) => {
         const parts = uuid.split('-')
-
+        
         if (configManager.getScannerConfig().filter.onAppId
             && configManager.getScannerConfig().filter.onCompanyId) {
             return isValidAppId(parts[0]) && isValidCompanyId(parts[1])
@@ -60,33 +61,32 @@ function BeaconHandler (scanner, configManager, upLinkHandler) {
         switch (configManager.getScannerConfig().range.unit.toLowerCase()) {
             case 'rssi':
                 return rssi >= sensitivity
-            case 'm':
+                case 'm':
                 return distance <= sensitivity
-            default:
+                default:
                 upLinkHandler.sendTelemetry(level.error, 'Range unit not configured.! Options: ["rssi", "m"]')
-        }
-    }
-
-    const handleIBeacon = (advertisement) => {
-        advertisement.distance = rssiToMeters(advertisement.iBeacon.txPower, advertisement.rssi)
-        if (isValidUUID(advertisement.iBeacon.uuid)) {
-            if (inRange(advertisement.rssi, advertisement.distance, configManager.getScannerConfig().range.detectSensitivity)) {
-                beaconFound(advertisement)
-                console.log('Beacon found rssi' + advertisement.rssi)
-            }
-            else {
-                //TODO: delete else statement
-                console.log('*************************************OUT OF RANGE******************** ' + advertisement.rssi)
             }
         }
-    }
-
-    const removeOldBeacons = () => {
-        beacons.forEach((value, key) => {
-            if (value.getUpdated() + configManager.getScannerConfig().forgetBeaconMs < Date.now())
-            {
-                beacons.delete(key)
-                console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!Beacon deleted' + key)
+        
+        const handleIBeacon = (advertisement) => {
+            advertisement.distance = rssiToMeters(advertisement.iBeacon.txPower, advertisement.rssi)
+            if (isValidUUID(advertisement.iBeacon.uuid)) {
+                if (inRange(advertisement.rssi, advertisement.distance, configManager.getScannerConfig().range.detectSensitivity)) {
+                    beaconFound(advertisement)
+                    logToConsole(level.debug, `Beacon found with rssi: ${advertisement.rssi}`)
+                }
+                else {
+                    logToConsole(level.debug, `Beacon out of range: ${advertisement.rssi}`)
+                }
+            }
+        }
+        
+        const removeOldBeacons = () => {
+            beacons.forEach((value, key) => {
+                if (value.getUpdated() + configManager.getScannerConfig().forgetBeaconMs < Date.now())
+                {
+                    beacons.delete(key)
+                    logToConsole(level.debug, `Beacon deleted with key: ${key}`)
             }
         })
     }
