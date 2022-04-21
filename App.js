@@ -24,7 +24,7 @@ mqttClient.on("error", (error) => {
 });
 
 mqttClient.on("connect", () => {
-    logToConsole(level.info, `MQTT Connected. For application status see topic: ${ConfigurationManager.getMqttConfig().topics.telemetry}`)
+    logToConsole(level.info, `MQTT Connected. For application status see topic: ${configManager.getMqttConfig().topics.telemetry}`)
     upLinkHandler.sendTelemetry(level.info, 'MQTT connected.') 
     mqttClient.subscribe(configManager.getMqttConfig().topics.config)
     scanner.startScan().then((uplinkHandler) => {
