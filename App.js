@@ -11,7 +11,7 @@ import BeaconHandler from "./bluetooth/BeaconHandler.js";
 import { level } from "./utils/TelemetryMessage.js";
 
 const configManager = ConfigurationManager()
-const mqttClient = MqttClient(configManager.getMqttConfig())
+const mqttClient = MqttClient(configManager.getMqttConfig().options)
 const upLinkHandler = UpLinkHandler(mqttClient, configManager.getMqttConfig().topics)
 const scanner = new BeaconScanner();
 DownLinkHandler(mqttClient, configManager, upLinkHandler)
@@ -23,6 +23,7 @@ mqttClient.on("error", (error) => {
 });
 
 mqttClient.on("connect", () => {
+    console.log("MQTT Connected");
     upLinkHandler.sendTelemetry(level.info, 'MQTT connected.')
     mqttClient.subscribe(configManager.getMqttConfig().topics.config)
     scanner.startScan().then((uplinkHandler) => {

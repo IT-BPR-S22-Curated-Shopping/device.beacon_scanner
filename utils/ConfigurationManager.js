@@ -4,7 +4,6 @@ import { level } from "./TelemetryMessage.js";
 function ConfigurationManager() {
     const state = {
         mqttConfig: {
-            url: `${settings.mqttConfig.protocol}://${settings.mqttConfig.host}:${settings.mqttConfig.port}`,
             topics: {
                 config: `${settings.companyId}/${settings.deviceId}/config`,
                 status: `${settings.companyId}/${settings.deviceId}/status`,
@@ -12,6 +11,9 @@ function ConfigurationManager() {
                 beacon: `${settings.companyId}/${settings.deviceId}/beacon`
             },
             options: {
+                host: settings.mqttConfig.host,
+                port: settings.mqttConfig.port,
+                protocol: settings.mqttConfig.protocol,
                 clientId: settings.deviceId,
                 username: settings.mqttConfig.username,
                 password: settings.mqttConfig.password,
