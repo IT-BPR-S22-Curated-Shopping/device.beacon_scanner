@@ -4,8 +4,8 @@
 */
 import * as mqtt from 'mqtt'
 
-function MqttClient(configuration) {
-    return mqtt.connect(configuration.options)
+function MqttClient(mqttOptions) {
+    return mqtt.connect(mqttOptions)
 }
 
 export default MqttClient
