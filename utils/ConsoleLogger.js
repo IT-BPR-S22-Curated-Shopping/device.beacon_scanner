@@ -1,4 +1,4 @@
-import { level } from "./MessageLevels"
+import { level } from "./MessageLevels.js"
 
 export const logToConsole = (lvl, msg) => {
     const logLevel = level.info
