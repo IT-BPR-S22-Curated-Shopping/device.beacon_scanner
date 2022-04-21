@@ -1,4 +1,5 @@
-import settings from '../local.settings.json' assert {type: "json"}
+import settings from '../settings.json' assert {type: "json"}
+import credentials from '../local.credentials.json' assert {type: "json"}
 import { level } from "./MessageLevels.js";
 
 function ConfigurationManager() {
@@ -15,8 +16,8 @@ function ConfigurationManager() {
                 port: settings.mqttConfig.port,
                 protocol: settings.mqttConfig.protocol,
                 clientId: settings.deviceId,
-                username: settings.mqttConfig.username,
-                password: settings.mqttConfig.password,
+                username: credentials.mqtt.username,
+                password: credentials.mqtt.password,
                 reconnect: true,
                 reconnectPeriod: settings.mqttConfig.reconnectPeriod,
                 keepAlive: settings.mqttConfig.keepAlive,

@@ -1,0 +1,24 @@
+{
+    "appId": "010d2108",
+    "companyId": "0462",
+    "deviceId": "rpi3",
+    "scannerConfig": {
+        "range": {
+            "unit": "rssi",
+            "detectSensitivity": -80,
+            "targetSensitivity": -75
+        },
+        "forgetBeaconMs": 5000,
+        "filter": {
+            "onAppId": true,
+            "onCompanyId": false
+        }
+    }, 
+    "mqttConfig": {
+        "host": "637b798f8004424f8503cda3e53851b9.s2.eu.hivemq.cloud",
+        "port": 8883,
+        "protocol": "mqtts",
+        "reconnectPeriod": 1000,
+        "keepAlive": 60
+    }
+}
