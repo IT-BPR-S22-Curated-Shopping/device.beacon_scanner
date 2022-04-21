@@ -38,8 +38,8 @@ function ConfigurationManager() {
             },
             noiseFilter: {
                 observations: {
-                    min: 1,
-                    max: 10,
+                    min: 2,
+                    max: 3,
                 },
                 lastRssiWeight: 0.4
             },
