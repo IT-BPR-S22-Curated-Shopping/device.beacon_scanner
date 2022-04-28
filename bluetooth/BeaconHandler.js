@@ -34,9 +34,9 @@ function BeaconHandler (scanner, configManager, upLinkHandler) {
         }
     }
     
-    const isValidAppId = (appId) => appId.toUpperCase() === configManager.getScannerConfig().appId.toUpperCase()
+    const isValidAppId = (appId) => appId.toUpperCase() === configManager.getScannerConfig().detectFilter.onAppId.toUpperCase()
     
-    const isValidCompanyId = (companyId) => companyId.toUpperCase() === configManager.getScannerConfig().companyId.toUpperCase()
+    const isValidCompanyId = (companyId) => companyId.toUpperCase() === configManager.getScannerConfig().detectfilter.onCompanyId.toUpperCase()
     
     const isValidUUID = (uuid) => {
         const parts = uuid.split('-')
