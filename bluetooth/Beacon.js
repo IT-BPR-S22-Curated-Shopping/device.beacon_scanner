@@ -25,8 +25,11 @@ function Beacon(uuid, mac, major, minor, rssi, distance, noiseFilter) {
     }
     const getUpdated = () => state.updated
     const getNoOfObservations = () => state.observations.length
-    const getState = () => state
-    return { addObservation, getUpdated, getState, getNoOfObservations }
+    const getDistance = () => state.distance
+    const getRssi = () => state.rssi
+    const getUuid = () => state.uuid
+
+    return { addObservation, getUpdated, getDistance, getRssi, getUuid, getNoOfObservations }
 }
 
 export default Beacon

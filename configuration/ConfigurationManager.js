@@ -58,17 +58,17 @@ function ConfigurationManager() {
     }
     const getMqttConfig = () => state.mqttConfig
     const getScannerConfig = () => state.scannerConfig
-    const updateConfiguration = (payload, telemetryCallBack) => {
+    const updateConfiguration = (payload, callBack) => {
         switch (payload.type) {
             case 'mqtt':
-                telemetryCallBack(level.warning, 'MQTT configuration update not implemented.')
+                callBack(level.warning, 'MQTT configuration update not implemented.')
                 break
             case 'scanner':
                 state.scannerConfig = payload.config
-                telemetryCallBack(level.info, 'Scanner configuration updated.')
+                callBack(level.info, 'Scanner configuration updated.')
                 break
             default:
-                telemetryCallBack(level.warning, `Unknown configuration type received: ${payload}`)
+                callBack(level.warning, `Unknown configuration type received: ${payload}`)
                 break
         }
     }

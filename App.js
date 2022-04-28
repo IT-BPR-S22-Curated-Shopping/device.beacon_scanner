@@ -3,13 +3,13 @@
     https://github.com/futomi/node-beacon-scanner
 */
 
-import ConfigurationManager from "./config/ConfigurationManager.js";
+import ConfigurationManager from "./configuration/ConfigurationManager.js";
 import BeaconScanner from "node-beacon-scanner"
 import MqttClient from "./mqtt/MqttClient.js";
 import UpLinkHandler from "./mqtt/UpLinkHandler.js"
-import DownLinkHandler from "./mqtt/DownLinkHandler.js";
+import DownLinkHandler from "./mqtt/DownLinkHandler.js.js.js.js.js";
 import BeaconHandler from "./bluetooth/BeaconHandler.js";
-import { level } from "./utils/MessageLevels.js";
+import { MessageLevel } from "./utils/MessageLevel.js";
 import { logToConsole } from "./utils/ConsoleLogger.js";
 
 const configManager = ConfigurationManager()
@@ -20,18 +20,18 @@ DownLinkHandler(mqttClient, configManager, upLinkHandler)
 BeaconHandler(scanner, configManager, upLinkHandler)
 
 mqttClient.on("error", (error) => {
-    logToConsole(level.error, `Can't connect: ${error}`)
+    logToConsole(MessageLevel.error, `Can't connect: ${error}`)
     process.exit(1)
 });
 
 mqttClient.on("connect", () => {
-    logToConsole(level.info, `MQTT Connected. For application status see topic: ${configManager.getMqttConfig().topics.telemetry}`)
-    upLinkHandler.sendTelemetry(level.info, 'MQTT connected.') 
+    logToConsole(MessageLevel.info, `MQTT Connected. For application status see topic: ${configManager.getMqttConfig().topics.telemetry}`)
+    upLinkHandler.sendTelemetry(MessageLevel.info, 'MQTT connected.') 
     mqttClient.subscribe(configManager.getMqttConfig().topics.config)
     scanner.startScan().then((uplinkHandler) => {
-        upLinkHandler.sendTelemetry(level.info, 'Started to scan.')
+        upLinkHandler.sendTelemetry(MessageLevel.info, 'Started to scan.')
     }).catch((error, uplinkHandler) => {
-        upLinkHandler.sendTelemetry(level.error, `Beacon scanner: ${error}`)
+        upLinkHandler.sendTelemetry(MessageLevel.error, `Beacon scanner: ${error}`)
         setTimeout(() => process.exit(1), 1000)
     });
     upLinkHandler.sendStatus('ONLINE')

@@ -74,27 +74,4 @@ export class KalmanFilter1D {
         return ((this.A * this.cov) * this.A) + this.R;
     }
 
-    /**
-     * Return the last filtered measurement
-     * @return {Number}
-     */
-    lastMeasurement() {
-        return this.x;
-    }
-
-    /**
-     * Set measurement noise Q
-     * @param {Number} noise
-     */
-    setMeasurementNoise(noise) {
-        this.Q = noise;
-    }
-
-    /**
-     * Set the process noise R
-     * @param {Number} noise
-     */
-    setProcessNoise(noise) {
-        this.R = noise;
-    }
 }

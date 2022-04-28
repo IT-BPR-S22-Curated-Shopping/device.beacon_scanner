@@ -1,0 +1,1 @@
+export const detection = (UuidDetected, timeDetected) => ({ uuid: UuidDetected, time: timeDetected})
