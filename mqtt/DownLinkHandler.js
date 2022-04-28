@@ -1,4 +1,4 @@
-import { level } from "../utils/MessageLevels.js";
+import { MessageLevel } from "../utils/MessageLevel.js";
 
 function DownLinkHandler(mqttClient, configurationManager, upLinkHandler) {
     mqttClient.on('message', (topic, message) => {
@@ -7,7 +7,7 @@ function DownLinkHandler(mqttClient, configurationManager, upLinkHandler) {
                 configurationManager.updateConfiguration(JSON.parse(message.toString()), upLinkHandler.sendTelemetry)
                 break
             default:
-                upLinkHandler.sendTelemetry(level.warning, `Unknown topic ${topic} received message: ${message}`)
+                upLinkHandler.sendTelemetry(MessageLevel.warning, `Unknown topic ${topic} received message: ${message}`)
                 break
         }
     })

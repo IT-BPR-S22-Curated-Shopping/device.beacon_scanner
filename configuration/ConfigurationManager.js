@@ -1,6 +1,6 @@
 import settings from '../settings.json' assert {type: "json"}
 import credentials from '../local.credentials.json' assert {type: "json"}
-import { level } from "../utils/MessageLevels.js";
+import { MessageLevel } from "../utils/MessageLevel.js";
 
 
 function ConfigurationManager() {
@@ -61,14 +61,14 @@ function ConfigurationManager() {
     const updateConfiguration = (payload, callBack) => {
         switch (payload.type) {
             case 'mqtt':
-                callBack(level.warning, 'MQTT configuration update not implemented.')
+                callBack(MessageLevel.warning, 'MQTT configuration update not implemented.')
                 break
             case 'scanner':
                 state.scannerConfig = payload.config
-                callBack(level.info, 'Scanner configuration updated.')
+                callBack(MessageLevel.info, 'Scanner configuration updated.')
                 break
             default:
-                callBack(level.warning, `Unknown configuration type received: ${payload}`)
+                callBack(MessageLevel.warning, `Unknown configuration type received: ${payload}`)
                 break
         }
     }

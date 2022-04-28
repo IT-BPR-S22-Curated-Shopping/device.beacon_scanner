@@ -1,12 +1,12 @@
-import { level } from "./MessageLevels.js"
+import { MessageLevel } from "./MessageLevel.js"
 
 export const logToConsole = (lvl, msg) => {
-    const logLevel = level.info
-    if (logLevel === level.debug)
+    const logLevel = MessageLevel.info
+    if (logLevel === MessageLevel.debug)
     {
         console.log(`Level: ${lvl}, Message: ${msg}`)
     }
-    else if (lvl !== level.debug)
+    else if (lvl !== MessageLevel.debug)
     {
         console.log(`Level: ${lvl}, Message: ${msg}`)
     }
