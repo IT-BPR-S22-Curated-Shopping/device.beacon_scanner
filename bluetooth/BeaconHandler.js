@@ -40,12 +40,9 @@ function BeaconHandler (scanner, configManager, upLinkHandler) {
     
     const isValidUUID = (uuid) => {
         const parts = uuid.split('-')
-        console.log('is below here');
-        console.log("App id: " + configManager.getScannerConfig().detectFilter.onAppId);
-        console.log("C id: " + configManager.getScannerConfig().detectFilter.onCompanyId); 
         
         if (configManager.getScannerConfig().detectFilter.onAppId
-            && configManager.getScannerConfig().detectfilter.onCompanyId) {
+            && configManager.getScannerConfig().detectFilter.onCompanyId) {
             return isValidAppId(parts[0]) && isValidCompanyId(parts[1])
         }
         else if (configManager.getScannerConfig().detectFilter.onAppId) {
