@@ -7,7 +7,7 @@ import ConfigurationManager from "./configuration/ConfigurationManager.js";
 import BeaconScanner from "node-beacon-scanner"
 import MqttClient from "./mqtt/MqttClient.js";
 import UpLinkHandler from "./mqtt/UpLinkHandler.js"
-import DownLinkHandler from "./mqtt/DownLinkHandler.js.js.js.js.js";
+import DownLinkHandler from "./mqtt/DownLinkHandler.js";
 import BeaconHandler from "./bluetooth/BeaconHandler.js";
 import { MessageLevel } from "./utils/MessageLevel.js";
 import { logToConsole } from "./utils/ConsoleLogger.js";
