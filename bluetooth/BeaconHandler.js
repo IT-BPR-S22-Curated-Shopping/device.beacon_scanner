@@ -28,7 +28,10 @@ function BeaconHandler (scanner, configManager, upLinkHandler) {
         if (beacon.getNoOfObservations() >= configManager.getScannerConfig().noiseFilter.observations.min) {
             if (inRange(beacon.getState().rssi, beacon.getState().distance,
                 configManager.getScannerConfig().range.targetSensitivity)) {
-                upLinkHandler.sendBeacon(beacon.getState())
+                upLinkHandler.sendBeacon({
+                    uuid: beacon.getState().uuid,
+                    time: beacon.getState().updated
+                })
                 logToConsole(level.debug, `Sending beacon with rssi: ${beacon.getState().rssi}`)
             }
         }
