@@ -1,4 +1,4 @@
-import { rssiToMeters } from './BeaconUtils.js'
+import { rssiToMeters } from '../utils/Converter.js'
 import {KalmanFilter1D} from "../utils/KalmanFilter1D.js";
 
 function Beacon(uuid, mac, major, minor, rssi, distance, noiseFilter) {
