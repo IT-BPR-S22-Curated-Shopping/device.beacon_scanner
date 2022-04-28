@@ -2,6 +2,7 @@ import settings from '../settings.json' assert {type: "json"}
 import credentials from '../local.credentials.json' assert {type: "json"}
 import { level } from "../utils/MessageLevels.js";
 
+
 function ConfigurationManager() {
     const state = {
         mqttConfig: {
