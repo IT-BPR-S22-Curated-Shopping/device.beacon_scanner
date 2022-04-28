@@ -1,5 +1,5 @@
 import Beacon from "./Beacon.js";
-import { rssiToMeters } from "./BeaconUtils.js";
+import { rssiToMeters } from "../utils/Converter.js";
 import {level} from "../utils/MessageLevels.js";
 import { logToConsole } from "../utils/ConsoleLogger.js";
 
@@ -12,8 +12,7 @@ function BeaconHandler (scanner, configManager, upLinkHandler) {
         if (beacons.has(advertisement.iBeacon.uuid)) {
             beacon = beacons.get(advertisement.iBeacon.uuid)
             beacon.addObservation(advertisement.rssi,
-                advertisement.iBeacon.txPower,
-                configManager.getScannerConfig().noiseFilter.lastRssiWeight)
+                advertisement.iBeacon.txPower)
         }
         else {
             beacon = new Beacon(advertisement.iBeacon.uuid,
@@ -22,7 +21,7 @@ function BeaconHandler (scanner, configManager, upLinkHandler) {
                 advertisement.iBeacon.minor,
                 advertisement.rssi,
                 advertisement.distance,
-                configManager.getScannerConfig().noiseFilter.observations.max)
+                configManager.getScannerConfig().noiseFilter)
             beacons.set(advertisement.iBeacon.uuid, beacon)
         }
 
@@ -42,14 +41,14 @@ function BeaconHandler (scanner, configManager, upLinkHandler) {
     const isValidUUID = (uuid) => {
         const parts = uuid.split('-')
         
-        if (configManager.getScannerConfig().filter.onAppId
+        if (configManager.getScannerConfig().detectFilter.onAppId
             && configManager.getScannerConfig().filter.onCompanyId) {
             return isValidAppId(parts[0]) && isValidCompanyId(parts[1])
         }
-        else if (configManager.getScannerConfig().filter.onAppId) {
+        else if (configManager.getScannerConfig().detectFilter.onAppId) {
             return isValidAppId(parts[0])
         }
-        else if (configManager.getScannerConfig().filter.onCompanyId) {
+        else if (configManager.getScannerConfig().detectFilter.onCompanyId) {
             return isValidCompanyId(parts[1])
         }
         else {

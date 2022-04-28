@@ -1,6 +1,6 @@
 import settings from '../settings.json' assert {type: "json"}
 import credentials from '../local.credentials.json' assert {type: "json"}
-import { level } from "./MessageLevels.js";
+import { level } from "../utils/MessageLevels.js";
 
 function ConfigurationManager() {
     const state = {
@@ -9,7 +9,7 @@ function ConfigurationManager() {
                 config: `${settings.companyId}/${settings.deviceId}/config`,
                 status: `${settings.companyId}/${settings.deviceId}/status`,
                 telemetry: `${settings.companyId}/${settings.deviceId}/telemetry`,
-                beacon: `${settings.companyId}/${settings.deviceId}/beacon`
+                detection: `${settings.companyId}/${settings.deviceId}/detection`
             },
             options: {
                 host: settings.mqttConfig.host,
@@ -44,9 +44,12 @@ function ConfigurationManager() {
                     min: 2,
                     max: 3,
                 },
-                lastRssiWeight: 0.4
+                kalmanSettings: {
+                    r: 0.01,
+                    q: 1
+                }
             },
-            filter: {
+            detectFilter: {
                 onAppId: settings.scannerConfig.filter.onAppId,
                 onCompanyId: settings.scannerConfig.filter.onCompanyId
             }

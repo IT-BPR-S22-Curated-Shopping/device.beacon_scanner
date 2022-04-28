@@ -1,8 +1,8 @@
 import { rssiToMeters } from './BeaconUtils.js'
 import {KalmanFilter1D} from "../utils/KalmanFilter1D.js";
 
-function Beacon(uuid, mac, major, minor, rssi, distance, maxObservations) {
-    const kFilter = new KalmanFilter1D({ R: 0.01, Q: 1})
+function Beacon(uuid, mac, major, minor, rssi, distance, noiseFilter) {
+    const kFilter = new KalmanFilter1D({ R: noiseFilter.kalmanSettings.r, Q: noiseFilter.kalmanSettings.q})
     const state = {
         uuid: uuid,
         major: major,
@@ -14,9 +14,9 @@ function Beacon(uuid, mac, major, minor, rssi, distance, maxObservations) {
         distance: distance,
         observations: [ rssi ]
     }
-    const calculateRssi = (lastRssi, currentRssi, alpha) => alpha * lastRssi + (1 - alpha) * currentRssi
-    const addObservation = (rssi, txPower, lastRssiWeight) => {
-        if (state.observations.length === maxObservations) {
+    const addObservation = (rssi, txPower) => {
+        state.rssi =  kFilter.filter(rssi)
+        if (state.observations.length === noiseFilter.observations.max) {
             state.observations.shift()
         }
         state.observations.push(state.rssi)

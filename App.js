@@ -2,7 +2,7 @@
   Libraries used:
     https://github.com/futomi/node-beacon-scanner
 */
-import ConfigurationManager from "./utils/ConfigurationManager.js";
+import ConfigurationManager from "./configuration/ConfigurationManager.js";
 import BeaconScanner from "node-beacon-scanner"
 import MqttClient from "./mqtt/MqttClient.js";
 import UpLinkHandler from "./mqtt/UpLinkHandler.js"

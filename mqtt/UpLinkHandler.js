@@ -7,7 +7,7 @@ function UpLinkHandler(mqttClient, topics) {
             message: msg
         }
     )
-    const sendBeacon = (beacon) => publish(topics.beacon, beacon)
+    const sendBeacon = (beacon) => publish(topics.detection, beacon)
 
     return { sendStatus, sendTelemetry, sendBeacon }
 }
