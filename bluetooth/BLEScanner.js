@@ -1,4 +1,5 @@
 import BeaconScanner from "node-beacon-scanner"
+import { MessageLevel } from "../utils/MessageLevel.js"
 
 function BLEScanner(upLinkHandler) {
     const state = { scanner: new BeaconScanner() }
