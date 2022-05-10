@@ -6,7 +6,7 @@ import { networkInterfaces } from 'node:os'
 
 
 function ConfigurationManager() {
-    const deviceId = networkInterfaces().wlan[0].mac
+    const deviceId = networkInterfaces().wlan0[0].mac
     const companyId = settings.companyId
     const state = {
         mqttConfig: {
