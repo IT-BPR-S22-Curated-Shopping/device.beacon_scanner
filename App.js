@@ -45,7 +45,6 @@ mqtt.client().on('message', (topic, message) => {
             }
             else if (message.toString().toUpperCase() === Commands.deactivate) {
                 scanner.deactivate()
-
             }
             break
         case mqtt.topics().backend.status:

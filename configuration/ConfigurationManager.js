@@ -1,7 +1,7 @@
 import settings from '../settings.json' assert {type: "json"}
 import credentials from '../local.credentials.json' assert {type: "json"}
 import { MessageLevel } from "../utils/MessageLevel.js";
-import { Status } from '../utils/Status';
+import { Status } from '../utils/Status.js';
 
 
 function ConfigurationManager() {
