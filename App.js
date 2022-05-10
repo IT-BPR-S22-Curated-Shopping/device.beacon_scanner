@@ -4,17 +4,18 @@
 */
 
 import ConfigurationManager from "./configuration/ConfigurationManager.js";
-import BeaconScanner from "node-beacon-scanner"
 import Mqtt from "./mqtt/Mqtt.js";
 import UpLinkHandler from "./mqtt/UpLinkHandler.js"
+import BLEScanner from "./bluetooth/BLEScanner.js"
 import BeaconHandler from "./bluetooth/BeaconHandler.js";
 import { MessageLevel } from "./utils/MessageLevel.js";
 import { logToConsole } from "./utils/ConsoleLogger.js";
+import { Commands } from "./utils/Commands.js";
 
 const configManager = ConfigurationManager()
 const mqtt = Mqtt(configManager.getMqttConfig())
 const upLinkHandler = UpLinkHandler(mqtt, configManager.getMqttConfig().topics)
-const scanner = new BeaconScanner();
+const scanner = BLEScanner(upLinkHandler)
 BeaconHandler(scanner, configManager, upLinkHandler)
 
 mqtt.client().on("error", (error) => {
@@ -29,19 +30,7 @@ mqtt.client().on("connect", () => {
     mqtt.subscribe(mqtt.topics().device.command)
     upLinkHandler.sendTelemetry(MessageLevel.info, 'Inactive')
 
-    mqtt.subscribe(mqtt.topics().backend.status)
-    
-
-
-
-
-    scanner.startScan().then(() => {
-        upLinkHandler.sendTelemetry(MessageLevel.info, 'Scanning')
-    }).catch((error) => {
-        upLinkHandler.sendTelemetry(MessageLevel.error, `Beacon scanner: ${error}`)
-        setTimeout(() => process.exit(1), 1000)
-    });
-    
+    mqtt.subscribe(mqtt.topics().backend.status)    
 })
 
 mqtt.client().on('message', (topic, message) => {
@@ -50,7 +39,12 @@ mqtt.client().on('message', (topic, message) => {
             configurationManager.updateConfiguration(JSON.parse(message.toString()), upLinkHandler.sendTelemetry)
             break
         case mqtt.topics().device.command:
-            console.log(message)
+            if (message.toString().toUpperCase() === Commands.activate) {
+                scanner.activate()
+            }
+            else if (message.toString().toUpperCase() === Commands.deactivate) {
+                scanner.deactivate()
+            }
             break
         default:
             upLinkHandler.sendTelemetry(MessageLevel.warning, `Unknown topic ${topic} received message: ${message}`)
