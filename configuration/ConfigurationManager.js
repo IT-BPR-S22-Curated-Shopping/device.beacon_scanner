@@ -1,6 +1,7 @@
 import settings from '../settings.json' assert {type: "json"}
 import credentials from '../local.credentials.json' assert {type: "json"}
 import { MessageLevel } from "../utils/MessageLevel.js";
+import { Status } from '../utils/Status';
 
 
 function ConfigurationManager() {
@@ -32,7 +33,7 @@ function ConfigurationManager() {
                 clean: true,
                 will: {
                     topic: `${settings.companyId}/${settings.deviceId}/status`,
-                    payload: 'OFFLINE',
+                    payload: Status.offline,
                     qos: 2,
                     retain: true
                 }

@@ -11,6 +11,7 @@ import BeaconHandler from "./bluetooth/BeaconHandler.js";
 import { MessageLevel } from "./utils/MessageLevel.js";
 import { logToConsole } from "./utils/ConsoleLogger.js";
 import { Commands } from "./utils/Commands.js";
+import { Status } from "./utils/Status.js";
 
 const configManager = ConfigurationManager()
 const mqtt = Mqtt(configManager.getMqttConfig())
@@ -25,7 +26,7 @@ mqtt.client().on("error", (error) => {
 
 mqtt.client().on("connect", () => {
     logToConsole(MessageLevel.info, `MQTT Connected. For application status see topic: ${configManager.getMqttConfig().topics.device.telemetry}`)
-    upLinkHandler.sendStatus('ONLINE')
+    upLinkHandler.sendStatus(Status.online)
 
     mqtt.subscribe(mqtt.topics().device.command)
     upLinkHandler.sendTelemetry(MessageLevel.info, 'Inactive')
@@ -45,6 +46,14 @@ mqtt.client().on('message', (topic, message) => {
             else if (message.toString().toUpperCase() === Commands.deactivate) {
                 scanner.deactivate()
 
+            }
+            break
+        case mqtt.topics().backend.status:
+            if (message.toString().toUpperCase() === Status.online) {
+                mqtt.publish(mqtt.topics.backend.hello, mqtt.options.clientId)
+            }
+            else if (message.toString().toUpperCase() === Status.offline) {
+                scanner.deactivate()
             }
             break
         default:
