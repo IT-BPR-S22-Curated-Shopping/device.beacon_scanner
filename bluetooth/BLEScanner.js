@@ -1,3 +1,7 @@
+/*
+  Libraries used:
+    https://github.com/futomi/node-beacon-scanner
+*/
 import BeaconScanner from "node-beacon-scanner"
 import { MessageLevel } from "../utils/MessageLevel.js"
 

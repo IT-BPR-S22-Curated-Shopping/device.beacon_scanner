@@ -1,8 +1,3 @@
-/*
-  Libraries used:
-    https://github.com/futomi/node-beacon-scanner
-*/
-
 import ConfigurationManager from "./configuration/ConfigurationManager.js";
 import Mqtt from "./mqtt/Mqtt.js";
 import UpLinkHandler from "./mqtt/UpLinkHandler.js"
@@ -31,27 +26,28 @@ mqtt.client().on("connect", () => {
     mqtt.subscribe(mqtt.topics().device.command)
     upLinkHandler.sendTelemetry(MessageLevel.info, 'Inactive')
 
-    mqtt.subscribe(mqtt.topics().backend.status)    
+    mqtt.subscribe(mqtt.topics().backend.status) 
 })
 
 mqtt.client().on('message', (topic, message) => {
+    const msg = JSON.parse(message.toString().trim())
     switch (topic) {
         case mqtt.topics().device.config:
-            configurationManager.updateConfiguration(JSON.parse(message.toString()), upLinkHandler.sendTelemetry)
+            configurationManager.updateConfiguration(msg, upLinkHandler.sendTelemetry)
             break
         case mqtt.topics().device.command:
-            if (message.toString().toUpperCase() === Commands.activate) {
+            if (msg.toUpperCase() === Commands.activate) {
                 scanner.activate()
             }
-            else if (message.toString().toUpperCase() === Commands.deactivate) {
+            else if (msg.toUpperCase() === Commands.deactivate) {
                 scanner.deactivate()
             }
             break
         case mqtt.topics().backend.status:
-            if (message.toString().toUpperCase() === Status.online) {
-                mqtt.publish(mqtt.topics.backend.hello, mqtt.options.clientId)
+            if (msg.toUpperCase() === Status.online) {
+                mqtt.publish(mqtt.topics().backend.hello, "HERE I AM")
             }
-            else if (message.toString().toUpperCase() === Status.offline) {
+            else if (msg.toUpperCase() === Status.offline) {
                 scanner.deactivate()
             }
             break

@@ -2,9 +2,11 @@ import settings from '../settings.json' assert {type: "json"}
 import credentials from '../local.credentials.json' assert {type: "json"}
 import { MessageLevel } from "../utils/MessageLevel.js";
 import { Status } from '../utils/Status.js';
+import { networkInterfaces } from 'node:os'
 
 
 function ConfigurationManager() {
+    console.log(networkInterfaces())
     const state = {
         mqttConfig: {
             topics: {
@@ -16,8 +18,8 @@ function ConfigurationManager() {
                     detection: `${settings.companyId}/${settings.deviceId}/${settings.mqttConfig.topics.device.detection}`
                 },
                 backend: {
-                    hello: `${settings.companyId}/${settings.deviceId}/${settings.mqttConfig.topics.backend.hello}`,
-                    status: `${settings.companyId}/${settings.deviceId}/${settings.mqttConfig.topics.backend.status}`
+                    hello: settings.mqttConfig.topics.backend.hello,
+                    status: settings.mqttConfig.topics.backend.status
                 }
             },
             options: {
