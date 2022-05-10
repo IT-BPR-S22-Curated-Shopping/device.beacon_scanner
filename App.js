@@ -45,7 +45,7 @@ mqtt.client().on('message', (topic, message) => {
             break
         case mqtt.topics().backend.status:
             if (msg.toUpperCase() === Status.online) {
-                mqtt.publish(mqtt.topics().backend.hello, "HERE I AM")
+                mqtt.publish(mqtt.topics().backend.hello, mqtt.topics().device.root)
             }
             else if (msg.toUpperCase() === Status.offline) {
                 scanner.deactivate()

@@ -6,16 +6,18 @@ import { networkInterfaces } from 'node:os'
 
 
 function ConfigurationManager() {
-    console.log(networkInterfaces())
+    const deviceId = networkInterfaces().wlan[0].mac
+    const companyId = settings.companyId
     const state = {
         mqttConfig: {
             topics: {
                 device: {
-                    config: `${settings.companyId}/${settings.deviceId}/${settings.mqttConfig.topics.device.configuration}`,
-                    command: `${settings.companyId}/${settings.deviceId}/${settings.mqttConfig.topics.device.command}`,
-                    status: `${settings.companyId}/${settings.deviceId}/${settings.mqttConfig.topics.device.status}`,
-                    telemetry: `${settings.companyId}/${settings.deviceId}/${settings.mqttConfig.topics.device.telemetry}`,
-                    detection: `${settings.companyId}/${settings.deviceId}/${settings.mqttConfig.topics.device.detection}`
+                    root: `${companyId}/${deviceId}`,
+                    config: `${companyId}/${deviceId}/${settings.mqttConfig.topics.device.configuration}`,
+                    command: `${companyId}/${deviceId}/${settings.mqttConfig.topics.device.command}`,
+                    status: `${companyId}/${deviceId}/${settings.mqttConfig.topics.device.status}`,
+                    telemetry: `${companyId}/${deviceId}/${settings.mqttConfig.topics.device.telemetry}`,
+                    detection: `${companyId}/${deviceId}/${settings.mqttConfig.topics.device.detection}`
                 },
                 backend: {
                     hello: settings.mqttConfig.topics.backend.hello,
@@ -26,7 +28,7 @@ function ConfigurationManager() {
                 host: settings.mqttConfig.host,
                 port: settings.mqttConfig.port,
                 protocol: settings.mqttConfig.protocol,
-                clientId: settings.deviceId,
+                clientId: deviceId,
                 username: credentials.mqtt.username,
                 password: credentials.mqtt.password,
                 reconnect: true,
@@ -34,7 +36,7 @@ function ConfigurationManager() {
                 keepAlive: settings.mqttConfig.keepAlive,
                 clean: true,
                 will: {
-                    topic: `${settings.companyId}/${settings.deviceId}/status`,
+                    topic: `${companyId}/${deviceId}/${settings.mqttConfig.topics.device.status}`,
                     payload: Status.offline,
                     qos: 2,
                     retain: true
@@ -42,8 +44,8 @@ function ConfigurationManager() {
             }
         },
         scannerConfig: {
-            appId: settings.appId,
-            companyId: settings.companyId,
+            appId: "010d2108",
+            companyId: companyId,
             forgetBeaconMs: settings.scannerConfig.forgetBeaconMs,
             range: {
                 unit: settings.scannerConfig.range.unit,

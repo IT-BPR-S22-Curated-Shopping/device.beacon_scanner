@@ -1,7 +1,5 @@
 {
-    "appId": "010d2108",
     "companyId": "0462",
-    "deviceId": "rpi3",
     "scannerConfig": {
         "range": {
             "unit": "rssi",
