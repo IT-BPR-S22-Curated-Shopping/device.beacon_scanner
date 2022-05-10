@@ -16,7 +16,7 @@ const configManager = ConfigurationManager()
 const mqtt = Mqtt(configManager.getMqttConfig())
 const upLinkHandler = UpLinkHandler(mqtt, configManager.getMqttConfig().topics)
 const scanner = BLEScanner(upLinkHandler)
-BeaconHandler(scanner, configManager, upLinkHandler)
+BeaconHandler(scanner.handle(), configManager, upLinkHandler)
 
 mqtt.client().on("error", (error) => {
     logToConsole(MessageLevel.error, `Can't connect: ${error}`)
@@ -44,6 +44,7 @@ mqtt.client().on('message', (topic, message) => {
             }
             else if (message.toString().toUpperCase() === Commands.deactivate) {
                 scanner.deactivate()
+
             }
             break
         default:
