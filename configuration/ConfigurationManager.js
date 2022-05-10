@@ -7,10 +7,17 @@ function ConfigurationManager() {
     const state = {
         mqttConfig: {
             topics: {
-                config: `${settings.companyId}/${settings.deviceId}/config`,
-                status: `${settings.companyId}/${settings.deviceId}/status`,
-                telemetry: `${settings.companyId}/${settings.deviceId}/telemetry`,
-                detection: `${settings.companyId}/${settings.deviceId}/detection`
+                device: {
+                    config: `${settings.companyId}/${settings.deviceId}/${settings.mqttConfig.topics.device.configuration}`,
+                    command: `${settings.companyId}/${settings.deviceId}/${settings.mqttConfig.topics.device.command}`,
+                    status: `${settings.companyId}/${settings.deviceId}/${settings.mqttConfig.topics.device.status}`,
+                    telemetry: `${settings.companyId}/${settings.deviceId}/${settings.mqttConfig.topics.device.telemetry}`,
+                    detection: `${settings.companyId}/${settings.deviceId}/${settings.mqttConfig.topics.device.detection}`
+                },
+                backend: {
+                    hello: `${settings.companyId}/${settings.deviceId}/${settings.mqttConfig.topics.backend.hello}`,
+                    status: `${settings.companyId}/${settings.deviceId}/${settings.mqttConfig.topics.backend.status}`
+                }
             },
             options: {
                 host: settings.mqttConfig.host,

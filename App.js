@@ -25,14 +25,17 @@ mqttClient.on("error", (error) => {
 });
 
 mqttClient.on("connect", () => {
-    logToConsole(MessageLevel.info, `MQTT Connected. For application status see topic: ${configManager.getMqttConfig().topics.telemetry}`)
-    upLinkHandler.sendTelemetry(MessageLevel.info, 'MQTT connected.') 
-    mqttClient.subscribe(configManager.getMqttConfig().topics.config)
+    logToConsole(MessageLevel.info, `MQTT Connected. For application status see topic: ${configManager.getMqttConfig().topics.device.telemetry}`)
+    upLinkHandler.sendStatus('ONLINE')
+
+    mqttClient.subscribe(configManager.getMqttConfig().topics.device.command)
+    upLinkHandler.sendTelemetry(MessageLevel.info, 'Inactive')
+
     scanner.startScan().then(() => {
-        upLinkHandler.sendTelemetry(MessageLevel.info, 'Started to scan.')
+        upLinkHandler.sendTelemetry(MessageLevel.info, 'Scanning')
     }).catch((error) => {
         upLinkHandler.sendTelemetry(MessageLevel.error, `Beacon scanner: ${error}`)
         setTimeout(() => process.exit(1), 1000)
     });
-    upLinkHandler.sendStatus('ONLINE')
+    
 })

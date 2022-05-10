@@ -19,6 +19,19 @@
         "port": 8883,
         "protocol": "mqtts",
         "reconnectPeriod": 1000,
-        "keepAlive": 60
+        "keepAlive": 60,
+        "topics" : {
+            "device": {
+                "configuration": "configuration",
+                "status": "status",
+                "telemetry": "telemetry",
+                "command": "command",
+                "detection": "detection"
+            },
+            "backend": {
+                "status": "backend/status",
+                "hello": "backend/hello"
+            }
+        }
     }
 }

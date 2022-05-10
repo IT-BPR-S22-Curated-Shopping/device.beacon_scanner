@@ -3,7 +3,7 @@ import { MessageLevel } from "../utils/MessageLevel.js";
 function DownLinkHandler(mqttClient, configurationManager, upLinkHandler) {
     mqttClient.on('message', (topic, message) => {
         switch (topic) {
-            case configurationManager.getMqttConfig().topics.config:
+            case configurationManager.getMqttConfig().topics.device.config:
                 configurationManager.updateConfiguration(JSON.parse(message.toString()), upLinkHandler.sendTelemetry)
                 break
             default:
