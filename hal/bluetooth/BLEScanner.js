@@ -38,8 +38,24 @@ function BLEScanner(configManager, upLinkHandler) {
             }
         }
     }
-    const isValidAppId = (appId) => appId.toUpperCase() === configManager.getAppId().toUpperCase()
-    const isValidCompanyId = (companyId) => companyId.toUpperCase() === configManager.getCompanyId().toUpperCase()
+    const isValidAppId = (appId) => {
+        if (appId.toUpperCase() === configManager.getAppId().toUpperCase()) {
+            return true
+        }
+        else {
+            logToConsole(MessageLevel.debug, `Invalid app ID: ${appId}`)
+            return false;
+        } 
+    }
+    const isValidCompanyId = (companyId) => {
+        if (companyId.toUpperCase() === configManager.getCompanyId().toUpperCase()) {
+            return true
+        }
+        else {
+            logToConsole(MessageLevel.debug, `Invalid company ID: ${companyId}`)
+            return false
+        }
+    }
     const isValidUUID = (uuid) => {
         const parts = uuid.split('-')
         
@@ -79,6 +95,9 @@ function BLEScanner(configManager, upLinkHandler) {
                 logToConsole(MessageLevel.debug, `Beacon out of range: ${advertisement.rssi}`)
             }
         }
+        else {
+            logToConsole(MessageLevel.debug, `Invalid UUID: ${advertisement.iBeacon.uuid}`)
+        }
     }
     const removeOldBeacons = () => {
         state.beacons.forEach((value, key) => {
@@ -91,6 +110,7 @@ function BLEScanner(configManager, upLinkHandler) {
     state.handle.onadvertisement = (advertisement) => {
         switch (advertisement.beaconType) {
             case 'iBeacon':
+                logToConsole(MessageLevel.debug, `iBeacon found: ${advertisement.iBeacon.uuid}`)
                 handleIBeacon(advertisement)
                 break
             default:
