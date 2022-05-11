@@ -5,7 +5,7 @@ import ConfigurationManager from './ConfigurationManager'
 let configManager
 
 beforeEach(() => {
-    configManager = ConfigurationManager();
+    configManager = ConfigurationManager("id");
 });
 
 test('MQTT options host', () => {

@@ -1,18 +1,18 @@
 import ConfigurationManager from "./configuration/ConfigurationManager.js";
 import Mqtt from "./mqtt/Mqtt.js";
 import UpLinkHandler from "./mqtt/UpLinkHandler.js"
-import BLEScanner from "./bluetooth/BLEScanner.js"
-import BeaconHandler from "./bluetooth/BeaconHandler.js";
+import BLEScanner from "./hal/bluetooth/BLEScanner.js"
+import { macAddress } from './hal/Information/MacProvider.js'
 import { MessageLevel } from "./utils/MessageLevel.js";
 import { logToConsole } from "./utils/ConsoleLogger.js";
 import { Commands } from "./utils/Commands.js";
 import { Status } from "./utils/Status.js";
+import { hello } from "./models/Hello.js"
 
-const configManager = ConfigurationManager()
+const configManager = ConfigurationManager(macAddress())
 const mqtt = Mqtt(configManager.getMqttConfig())
 const upLinkHandler = UpLinkHandler(mqtt, configManager.getMqttConfig().topics)
-const scanner = BLEScanner(upLinkHandler)
-BeaconHandler(scanner.handle(), configManager, upLinkHandler)
+const scanner = BLEScanner(configManager, upLinkHandler)
 
 mqtt.client().on("error", (error) => {
     logToConsole(MessageLevel.error, `Can't connect: ${error}`)
@@ -33,7 +33,7 @@ mqtt.client().on('message', (topic, message) => {
     const msg = JSON.parse(message.toString().trim())
     switch (topic) {
         case mqtt.topics().device.config:
-            configurationManager.updateConfiguration(msg, upLinkHandler.sendTelemetry)
+            configManager.updateConfiguration(msg, upLinkHandler.sendTelemetry)
             break
         case mqtt.topics().device.command:
             if (msg.toUpperCase() === Commands.activate) {
@@ -45,7 +45,7 @@ mqtt.client().on('message', (topic, message) => {
             break
         case mqtt.topics().backend.status:
             if (msg.toUpperCase() === Status.online) {
-                mqtt.publish(mqtt.topics().backend.hello, mqtt.topics().device.root)
+                mqtt.publish(mqtt.topics().backend.hello, hello(Date.now(), configManager.getCompanyId(), configManager.getDeviceId()))
             }
             else if (msg.toUpperCase() === Status.offline) {
                 scanner.deactivate()

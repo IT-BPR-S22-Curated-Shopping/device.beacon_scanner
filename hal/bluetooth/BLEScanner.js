@@ -1,12 +1,15 @@
-import Beacon from "./Beacon.js";
-import { rssiToMeters } from "../utils/Converter.js";
-import {MessageLevel} from "../utils/MessageLevel.js";
-import { logToConsole } from "../utils/ConsoleLogger.js";
-import { detection } from "./Detection.js";
+/*
+  Libraries used:
+    https://github.com/futomi/node-beacon-scanner
+*/
+import BeaconScanner from "node-beacon-scanner"
+import Beacon from "../../models/Beacon.js"
+import { logToConsole } from "../../utils/ConsoleLogger.js"
+import { MessageLevel } from "../../utils/MessageLevel.js"
+import { detection } from "../../models/Detection.js"
 
-function BeaconHandler (scanner, configManager, upLinkHandler) {
-    const beacons = new Map()
-
+function BLEScanner(configManager, upLinkHandler) {
+    const state = { handle: new BeaconScanner(), beacons: new Map() }
     const beaconFound = (advertisement) => {
         let beacon = {}
 
@@ -34,11 +37,8 @@ function BeaconHandler (scanner, configManager, upLinkHandler) {
             }
         }
     }
-    
-    const isValidAppId = (appId) => appId.toUpperCase() === configManager.getScannerConfig().appId.toUpperCase()
-    
-    const isValidCompanyId = (companyId) => companyId.toUpperCase() === configManager.getScannerConfig().companyId.toUpperCase()
-    
+    const isValidAppId = (appId) => appId.toUpperCase() === configManager.getAppId().toUpperCase()
+    const isValidCompanyId = (companyId) => companyId.toUpperCase() === configManager.getCompanyId().toUpperCase()
     const isValidUUID = (uuid) => {
         const parts = uuid.split('-')
         
@@ -56,7 +56,6 @@ function BeaconHandler (scanner, configManager, upLinkHandler) {
             return true
         }
     }
-
     const inRange = (rssi, distance, sensitivity) => {
         switch (configManager.getScannerConfig().range.unit.toLowerCase()) {
             case 'rssi':
@@ -68,9 +67,8 @@ function BeaconHandler (scanner, configManager, upLinkHandler) {
                 return false
         }
     }
-        
     const handleIBeacon = (advertisement) => {
-        advertisement.distance = rssiToMeters(advertisement.iBeacon.txPower, advertisement.rssi)
+        advertisement.distance = Beacon.rssiToMeters(advertisement.iBeacon.txPower, advertisement.rssi)
         if (isValidUUID(advertisement.iBeacon.uuid)) {
             if (inRange(advertisement.rssi, advertisement.distance, configManager.getScannerConfig().range.detectSensitivity)) {
                 beaconFound(advertisement)
@@ -81,17 +79,15 @@ function BeaconHandler (scanner, configManager, upLinkHandler) {
             }
         }
     }
-        
     const removeOldBeacons = () => {
-        beacons.forEach((value, key) => {
+        state.beacons.forEach((value, key) => {
             if (value.getUpdated() + configManager.getScannerConfig().forgetBeaconMs < Date.now()) {
-                beacons.delete(key)
+                state.beacons.delete(key)
                 logToConsole(MessageLevel.debug, `Beacon deleted with key: ${key}`)
             }
         })
     }
-
-    scanner.onadvertisement = (advertisement) => {
+    state.handle.onadvertisement = (advertisement) => {
         switch (advertisement.beaconType) {
             case 'iBeacon':
                 handleIBeacon(advertisement)
@@ -101,6 +97,20 @@ function BeaconHandler (scanner, configManager, upLinkHandler) {
         }
         removeOldBeacons()
     }
+    const activate = () => state.handle.startScan()
+    .then(() => upLinkHandler.sendTelemetry(MessageLevel.info, 'Scanning active'))
+    .catch((error) => {
+        upLinkHandler.sendTelemetry(MessageLevel.error, `Beacon scanner: ${error}`)
+        setTimeout(() => process.exit(1), 1000)
+    });
+    const deactivate = () => {
+        state.handle.stopScan()
+        upLinkHandler.sendTelemetry(MessageLevel.info, 'Scanning inactive')
+    }
+    return {
+        activate, 
+        deactivate
+    } 
 }
 
-export default BeaconHandler
+export default BLEScanner
