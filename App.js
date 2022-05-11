@@ -28,7 +28,7 @@ mqtt.client().on("connect", () => {
     
     mqtt.subscribe(mqtt.topics().backend.status) 
     upLinkHandler.sendTelemetry(MessageLevel.info, 'Inactive')
-    upLinkHandler.sendStatus(Status.online.toString())
+    mqtt.publish(mqtt.topics().device.status, "ONLINE", { qos: 1, retain: true })
 })
 
 mqtt.client().on('message', (topic, message) => {
