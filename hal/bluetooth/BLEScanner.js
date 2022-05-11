@@ -14,7 +14,7 @@ function BLEScanner(configManager, upLinkHandler) {
     const beaconFound = (advertisement) => {
         let beacon = {}
 
-        if (beacons.has(advertisement.iBeacon.uuid)) {
+        if (state.beacons.has(advertisement.iBeacon.uuid)) {
             beacon = beacons.get(advertisement.iBeacon.uuid)
             beacon.addObservation(advertisement.rssi,
                 advertisement.iBeacon.txPower)
@@ -27,7 +27,7 @@ function BLEScanner(configManager, upLinkHandler) {
                 advertisement.rssi,
                 advertisement.distance,
                 configManager.getScannerConfig().noiseFilter)
-            beacons.set(advertisement.iBeacon.uuid, beacon)
+            state.beacons.set(advertisement.iBeacon.uuid, beacon)
         }
 
         if (beacon.getNoOfObservations() >= configManager.getScannerConfig().noiseFilter.observations.min) {
