@@ -53,6 +53,7 @@ mqtt.client().on('message', (topic, message) => {
             }
             else if (msg.toUpperCase() === deviceState.offline) {
                 scanner.deactivate()
+                upLinkHandler.sendTelemetry(MessageLevel.warning, "Backend disconnected. Scanning stopped.")
             }
             break
         default:
