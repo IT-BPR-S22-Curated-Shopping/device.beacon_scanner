@@ -48,10 +48,10 @@ mqtt.client().on('message', (topic, message) => {
             }
             break
         case mqtt.topics().backend.status:
-            if (msg.toUpperCase() === State.online) {
+            if (msg.toUpperCase() === deviceState.online) {
                 mqtt.publish(mqtt.topics().backend.hello, hello(configManager.getCompanyId(), configManager.getDeviceId()))
             }
-            else if (msg.toUpperCase() === State.offline) {
+            else if (msg.toUpperCase() === deviceState.offline) {
                 scanner.deactivate()
             }
             break
