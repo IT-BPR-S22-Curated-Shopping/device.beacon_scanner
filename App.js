@@ -9,7 +9,7 @@ import { Commands } from "./utils/Commands.js";
 import { State } from "./utils/State.js";
 import { hello } from "./models/Hello.js"
 import { status } from "./models/Status.js";
-import { deviceState } from "@abandonware/noble";
+import { deviceState } from "./utils/State.js";
 
 const configManager = ConfigurationManager(macAddress())
 const mqtt = Mqtt(configManager.getMqttConfig())
