@@ -1,8 +1,8 @@
 import settings from '../settings.json' assert {type: "json"}
 import credentials from '../local.credentials.json' assert {type: "json"}
 import { MessageLevel } from "../utils/MessageLevel.js";
-import { state } from '../utils/State.js';
-import { status } from '../model/Status.js'
+import { deviceState } from '../utils/State.js';
+import { status } from '../models/Status.js'
 
 function ConfigurationManager(macAddress) {
     const state = {
@@ -36,7 +36,7 @@ function ConfigurationManager(macAddress) {
                 clean: true,
                 will: {
                     topic: `${settings.companyId}/${macAddress}/${settings.mqttConfig.topics.device.status}`,
-                    payload: status(state.offline),
+                    payload: status(deviceState.offline),
                     qos: 0,
                     retain: false
                 }

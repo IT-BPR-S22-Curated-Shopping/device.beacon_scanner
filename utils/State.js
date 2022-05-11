@@ -1,4 +1,4 @@
-export const state = {
+export const deviceState = {
     offline: "OFFLINE",
     online: "ONLINE"
 }
