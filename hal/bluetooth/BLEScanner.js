@@ -15,7 +15,7 @@ function BLEScanner(configManager, upLinkHandler) {
         let beacon = {}
 
         if (state.beacons.has(advertisement.iBeacon.uuid)) {
-            beacon = beacons.get(advertisement.iBeacon.uuid)
+            beacon = state.beacons.get(advertisement.iBeacon.uuid)
             beacon.addObservation(advertisement.rssi,
                 advertisement.iBeacon.txPower)
         }
