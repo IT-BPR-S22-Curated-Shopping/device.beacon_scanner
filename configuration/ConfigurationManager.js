@@ -5,7 +5,7 @@ import { Status } from '../utils/Status.js';
 
 function ConfigurationManager(macAddress) {
     const state = {
-        appId: "0428",
+        appId: "0462",
         companyId: settings.companyId,
         deviceId: macAddress,
         mqttConfig: {
