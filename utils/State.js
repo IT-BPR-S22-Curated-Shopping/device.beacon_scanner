@@ -1,4 +1,4 @@
-export const Status = {
+export const state = {
     offline: "OFFLINE",
     online: "ONLINE"
 }

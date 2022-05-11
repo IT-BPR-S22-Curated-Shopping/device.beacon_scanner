@@ -6,8 +6,10 @@ import { macAddress } from './hal/Information/MacProvider.js'
 import { MessageLevel } from "./utils/MessageLevel.js";
 import { logToConsole } from "./utils/ConsoleLogger.js";
 import { Commands } from "./utils/Commands.js";
-import { Status } from "./utils/Status.js";
+import { State } from "./utils/State.js";
 import { hello } from "./models/Hello.js"
+import { status } from "./models/Status.js";
+import { state } from "@abandonware/noble";
 
 const configManager = ConfigurationManager(macAddress())
 const mqtt = Mqtt(configManager.getMqttConfig())
@@ -43,14 +45,14 @@ mqtt.client().on('message', (topic, message) => {
                 scanner.deactivate()
             }
             else if (msg.toUpperCase() === Commands.ready) {
-                upLinkHandler.sendStatus(Status.online)
+                upLinkHandler.sendStatus(status(state.online))
             }
             break
         case mqtt.topics().backend.status:
-            if (msg.toUpperCase() === Status.online) {
+            if (msg.toUpperCase() === State.online) {
                 mqtt.publish(mqtt.topics().backend.hello, hello(configManager.getCompanyId(), configManager.getDeviceId()))
             }
-            else if (msg.toUpperCase() === Status.offline) {
+            else if (msg.toUpperCase() === State.offline) {
                 scanner.deactivate()
             }
             break
