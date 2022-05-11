@@ -28,7 +28,6 @@ mqtt.client().on("connect", () => {
     
     mqtt.subscribe(mqtt.topics().backend.status) 
     upLinkHandler.sendTelemetry(MessageLevel.info, 'Inactive')
-    mqtt.publish(mqtt.topics().device.status, JSON.parse(Status.online), { qos: 1, retain: true })
 })
 
 mqtt.client().on('message', (topic, message) => {
@@ -48,6 +47,7 @@ mqtt.client().on('message', (topic, message) => {
         case mqtt.topics().backend.status:
             if (msg.toUpperCase() === Status.online) {
                 mqtt.publish(mqtt.topics().backend.hello, hello(configManager.getCompanyId(), configManager.getDeviceId()))
+                upLinkHandler.sendStatus(Status.online)
             }
             else if (msg.toUpperCase() === Status.offline) {
                 scanner.deactivate()
