@@ -26,6 +26,7 @@ mqtt.client().on("connect", () => {
     mqtt.subscribe(mqtt.topics().device.command)
     upLinkHandler.sendTelemetry(MessageLevel.info, 'Inactive')
 
+    mqtt.subscribe(mqtt.topics().device.config)
     mqtt.subscribe(mqtt.topics().backend.status) 
 })
 
