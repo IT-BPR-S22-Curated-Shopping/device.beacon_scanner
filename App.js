@@ -21,13 +21,14 @@ mqtt.client().on("error", (error) => {
 
 mqtt.client().on("connect", () => {
     logToConsole(MessageLevel.info, `MQTT Connected. For application status see topic: ${configManager.getMqttConfig().topics.device.telemetry}`)
-    upLinkHandler.sendStatus(Status.online)
-
+    
+    
     mqtt.subscribe(mqtt.topics().device.command)
-    upLinkHandler.sendTelemetry(MessageLevel.info, 'Inactive')
-
     mqtt.subscribe(mqtt.topics().device.config)
+    
     mqtt.subscribe(mqtt.topics().backend.status) 
+    upLinkHandler.sendTelemetry(MessageLevel.info, 'Inactive')
+    upLinkHandler.sendStatus(Status.online.toString())
 })
 
 mqtt.client().on('message', (topic, message) => {
