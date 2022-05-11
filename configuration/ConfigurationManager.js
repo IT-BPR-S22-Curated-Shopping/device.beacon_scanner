@@ -18,8 +18,8 @@ function ConfigurationManager(macAddress) {
                     detection: `${settings.companyId}/${macAddress}/${settings.mqttConfig.topics.device.detection}`
                 },
                 backend: {
-                    hello: settings.mqttConfig.topics.backend.hello,
-                    status: settings.mqttConfig.topics.backend.status
+                    hello: `0462/${settings.mqttConfig.topics.backend.hello}`,
+                    status: `0462/${settings.mqttConfig.topics.backend.status}`
                 }
             },
             options: {
