@@ -61,13 +61,13 @@ function BLEScanner(configManager, upLinkHandler) {
         
         if (configManager.getScannerConfig().detectFilter.onAppId
             && configManager.getScannerConfig().detectFilter.onCompanyId) {
-            return isValidAppId(parts[0]) && isValidCompanyId(parts[1])
+            return isValidAppId(parts[1]) && isValidCompanyId(parts[0])
         }
         else if (configManager.getScannerConfig().detectFilter.onAppId) {
-            return isValidAppId(parts[0])
+            return isValidAppId(parts[1])
         }
         else if (configManager.getScannerConfig().detectFilter.onCompanyId) {
-            return isValidCompanyId(parts[1])
+            return isValidCompanyId(parts[0])
         }
         else {
             return true
@@ -94,9 +94,6 @@ function BLEScanner(configManager, upLinkHandler) {
             else {
                 logToConsole(MessageLevel.debug, `Beacon out of range: ${advertisement.rssi}`)
             }
-        }
-        else {
-            logToConsole(MessageLevel.debug, `Invalid UUID: ${advertisement.iBeacon.uuid}`)
         }
     }
     const removeOldBeacons = () => {
