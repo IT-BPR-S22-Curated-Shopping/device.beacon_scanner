@@ -35,7 +35,7 @@ function ConfigurationManager(macAddress) {
                 clean: true,
                 will: {
                     topic: `${settings.companyId}/${macAddress}/${settings.mqttConfig.topics.device.status}`,
-                    payload: JSON.stringify(deviceState.offline),
+                    payload: deviceState.offline,
                     qos: 2,
                     retain: false
                 }
