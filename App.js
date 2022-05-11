@@ -22,7 +22,6 @@ mqtt.client().on("error", (error) => {
 mqtt.client().on("connect", () => {
     logToConsole(MessageLevel.info, `MQTT Connected. For application status see topic: ${configManager.getMqttConfig().topics.device.telemetry}`)
     
-    
     mqtt.subscribe(mqtt.topics().device.command)
     mqtt.subscribe(mqtt.topics().device.config)
     
@@ -43,11 +42,13 @@ mqtt.client().on('message', (topic, message) => {
             else if (msg.toUpperCase() === Commands.deactivate) {
                 scanner.deactivate()
             }
+            else if (msg.toUpperCase() === Commands.ready) {
+                upLinkHandler.sendStatus(Status.online)
+            }
             break
         case mqtt.topics().backend.status:
             if (msg.toUpperCase() === Status.online) {
                 mqtt.publish(mqtt.topics().backend.hello, hello(configManager.getCompanyId(), configManager.getDeviceId()))
-                upLinkHandler.sendStatus(Status.online)
             }
             else if (msg.toUpperCase() === Status.offline) {
                 scanner.deactivate()

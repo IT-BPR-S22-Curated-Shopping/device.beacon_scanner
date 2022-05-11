@@ -1,4 +1,5 @@
 export const Commands = {
     deactivate: "DEACTIVATE",
-    activate: "ACTIVATE"
+    activate: "ACTIVATE",
+    ready: "READY"
 }
