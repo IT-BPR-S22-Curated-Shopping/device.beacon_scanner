@@ -7,6 +7,7 @@ import Beacon from "../../models/Beacon.js"
 import { logToConsole } from "../../utils/ConsoleLogger.js"
 import { MessageLevel } from "../../utils/MessageLevel.js"
 import { detection } from "../../models/Detection.js"
+import { rssiToMeters } from "../../utils/Converter.js"
 
 function BLEScanner(configManager, upLinkHandler) {
     const state = { handle: new BeaconScanner(), beacons: new Map() }
@@ -68,7 +69,7 @@ function BLEScanner(configManager, upLinkHandler) {
         }
     }
     const handleIBeacon = (advertisement) => {
-        advertisement.distance = Beacon.rssiToMeters(advertisement.iBeacon.txPower, advertisement.rssi)
+        advertisement.distance = rssiToMeters(advertisement.iBeacon.txPower, advertisement.rssi)
         if (isValidUUID(advertisement.iBeacon.uuid)) {
             if (inRange(advertisement.rssi, advertisement.distance, configManager.getScannerConfig().range.detectSensitivity)) {
                 beaconFound(advertisement)

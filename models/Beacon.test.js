@@ -38,11 +38,3 @@ test('Beacon not uuid', () => {
 test('Beacon rssi', () => {
     expect(b.getRssi()).toBe(rssi);
 });
-
-test('ConvertRssiToMeters', () => {
-    const txPower = 65;
-    const rssi = 50;
-    expect(b.rssiToMeters(txPower, rssi)).toBe((10**((Number(txPower) - Number(rssi)) / (10 * 2))).toFixed(2));
-});
-
-
