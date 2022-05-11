@@ -31,10 +31,10 @@ mqtt.client().on("connect", () => {
 })
 
 mqtt.client().on('message', (topic, message) => {
-    const msg = JSON.parse(message.toString().trim())
+    const msg = message.toString().trim()
     switch (topic) {
         case mqtt.topics().device.config:
-            configManager.updateConfiguration(msg, upLinkHandler.sendTelemetry)
+            configManager.updateConfiguration(JSON.parse(msg), upLinkHandler.sendTelemetry)
             break
         case mqtt.topics().device.command:
             if (msg.toUpperCase() === Commands.activate) {
@@ -46,7 +46,7 @@ mqtt.client().on('message', (topic, message) => {
             break
         case mqtt.topics().backend.status:
             if (msg.toUpperCase() === Status.online) {
-                mqtt.publish(mqtt.topics().backend.hello, hello(Date.now(), configManager.getCompanyId(), configManager.getDeviceId()))
+                mqtt.publish(mqtt.topics().backend.hello, hello(configManager.getCompanyId(), configManager.getDeviceId()))
             }
             else if (msg.toUpperCase() === Status.offline) {
                 scanner.deactivate()
