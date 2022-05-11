@@ -44,6 +44,7 @@ mqtt.client().on('message', (topic, message) => {
             }
             else if (msg.toUpperCase() === Commands.ready) {
                 upLinkHandler.sendStatus(deviceState.online)
+                upLinkHandler.sendTelemetry(MessageLevel.info, 'Ready')
             }
             break
         case mqtt.topics().backend.status:

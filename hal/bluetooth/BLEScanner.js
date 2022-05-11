@@ -123,7 +123,7 @@ function BLEScanner(configManager, upLinkHandler) {
     });
     const deactivate = () => {
         state.handle.stopScan()
-        upLinkHandler.sendTelemetry(MessageLevel.info, 'Scanning inactive')
+        upLinkHandler.sendTelemetry(MessageLevel.info, 'Ready')
     }
     return {
         activate, 
