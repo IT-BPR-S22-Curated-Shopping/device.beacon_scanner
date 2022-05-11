@@ -1,5 +1,4 @@
-export const hello = (time, companyId, deviceId) => ({ 
-    timestamp: time, 
+export const hello = (companyId, deviceId) => ({ 
     company: companyId, 
     device: { 
         id: deviceId,
