@@ -7,8 +7,7 @@ import { MessageLevel } from "./utils/MessageLevel.js";
 import { logToConsole } from "./utils/ConsoleLogger.js";
 import { Commands } from "./utils/Commands.js";
 import { hello } from "./models/Hello.js"
-import { status } from "./models/Status.js";
-import { deviceState } from "./utils/State.js";
+import { deviceState } from "./utils/DeviceState.js";
 
 const configManager = ConfigurationManager(macAddress())
 const mqtt = Mqtt(configManager.getMqttConfig())
@@ -44,7 +43,7 @@ mqtt.client().on('message', (topic, message) => {
                 scanner.deactivate()
             }
             else if (msg.toUpperCase() === Commands.ready) {
-                upLinkHandler.sendStatus(status(deviceState.online))
+                upLinkHandler.sendStatus(deviceState.online)
             }
             break
         case mqtt.topics().backend.status:
