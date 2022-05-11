@@ -43,7 +43,7 @@ mqtt.client().on('message', (topic, message) => {
                 scanner.deactivate()
             }
             else if (msg.toUpperCase() === Commands.ready) {
-                mqtt.publish(mqtt.topics().device.status, deviceState.online)
+                upLinkHandler.sendStatus(deviceState.online)
                 upLinkHandler.sendTelemetry(MessageLevel.info, 'Ready')
             }
             break
