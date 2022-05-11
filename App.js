@@ -6,7 +6,6 @@ import { macAddress } from './hal/Information/MacProvider.js'
 import { MessageLevel } from "./utils/MessageLevel.js";
 import { logToConsole } from "./utils/ConsoleLogger.js";
 import { Commands } from "./utils/Commands.js";
-import { State } from "./utils/State.js";
 import { hello } from "./models/Hello.js"
 import { status } from "./models/Status.js";
 import { deviceState } from "./utils/State.js";
