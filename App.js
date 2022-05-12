@@ -29,7 +29,7 @@ mqtt.client().on("connect", () => {
 })
 
 mqtt.client().on('message', (topic, message) => {
-    const msg = JSON.parse(message.toString().trim())
+    const msg = JSON.parse(message.toString('utf-8').trim())
     switch (topic) {
         case mqtt.topics().device.config:
             configManager.updateConfiguration(msg, upLinkHandler.sendTelemetry)
@@ -47,12 +47,12 @@ mqtt.client().on('message', (topic, message) => {
             }
             break
         case mqtt.topics().backend.status:
-            if (msg.online) {
-                mqtt.publish(mqtt.topics().backend.hello, hello(configManager.getCompanyId(), configManager.getDeviceId()))
-            }
-            else {
-                scanner.deactivate()
-                upLinkHandler.sendTelemetry(MessageLevel.warning, "Backend disconnected. Scanning stopped.")
+                if (msg.online) {
+                    mqtt.publish(mqtt.topics().backend.hello, hello(configManager.getCompanyId(), configManager.getDeviceId()))
+                }
+                else {
+                    scanner.deactivate()
+                    upLinkHandler.sendTelemetry(MessageLevel.warning, "Backend disconnected. Scanning stopped.")
             }
             break
         default:
