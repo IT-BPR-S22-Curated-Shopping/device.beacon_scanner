@@ -1,5 +1,9 @@
 function UpLinkHandler(mqtt) {
-    const sendStatus = (msg) => mqtt.publish(mqtt.topics().device.status, msg)
+    const sendStatus = (isOnline) => mqtt.publish(mqtt.topics().device.status, 
+        {
+            online: isOnline
+        }
+    )
     const sendTelemetry = (lvl, msg) => mqtt.publish(mqtt.topics().device.telemetry,
         {
             level: lvl,

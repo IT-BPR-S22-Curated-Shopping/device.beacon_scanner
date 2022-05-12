@@ -7,7 +7,6 @@ import { MessageLevel } from "./utils/MessageLevel.js";
 import { logToConsole } from "./utils/ConsoleLogger.js";
 import { Commands } from "./utils/Commands.js";
 import { hello } from "./models/Hello.js"
-import { deviceState } from "./utils/DeviceState.js";
 
 const configManager = ConfigurationManager(macAddress())
 const mqtt = Mqtt(configManager.getMqttConfig())
@@ -30,28 +29,28 @@ mqtt.client().on("connect", () => {
 })
 
 mqtt.client().on('message', (topic, message) => {
-    const msg = message.toString().trim()
+    const msg = JSON.parse(message.toString().trim())
     switch (topic) {
         case mqtt.topics().device.config:
-            configManager.updateConfiguration(JSON.parse(msg), upLinkHandler.sendTelemetry)
+            configManager.updateConfiguration(msg, upLinkHandler.sendTelemetry)
             break
         case mqtt.topics().device.command:
-            if (msg.toUpperCase() === Commands.activate) {
+            if (msg.instruction === Commands.activate) {
                 scanner.activate()
             }
-            else if (msg.toUpperCase() === Commands.deactivate) {
+            else if (msg.instruction === Commands.deactivate) {
                 scanner.deactivate()
             }
-            else if (msg.toUpperCase() === Commands.ready) {
-                upLinkHandler.sendStatus(deviceState.online)
+            else if (msg.instruction === Commands.ready) {
+                upLinkHandler.sendStatus(true)
                 upLinkHandler.sendTelemetry(MessageLevel.info, 'Ready')
             }
             break
         case mqtt.topics().backend.status:
-            if (msg.toUpperCase() === deviceState.online) {
+            if (msg.online) {
                 mqtt.publish(mqtt.topics().backend.hello, hello(configManager.getCompanyId(), configManager.getDeviceId()))
             }
-            else if (msg.toUpperCase() === deviceState.offline) {
+            else {
                 scanner.deactivate()
                 upLinkHandler.sendTelemetry(MessageLevel.warning, "Backend disconnected. Scanning stopped.")
             }
