@@ -5,6 +5,8 @@
   "main": "App.js",
   "type": "module",
   "scripts": {
+    "start": "node App.js",
+    "local": "node App.js local",
     "test": "jest"
   },
   "author": "",
