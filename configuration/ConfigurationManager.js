@@ -3,7 +3,7 @@ import { MessageLevel } from "../utils/MessageLevel.js";
 
 function ConfigurationManager(settings) {
     const state = {
-        appId: settings.backendId,
+        appId: '0462',
         companyId: settings.companyId,
         deviceId: settings.deviceId,
         mqttConfig: {
