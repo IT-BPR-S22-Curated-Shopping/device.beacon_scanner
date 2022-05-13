@@ -15,10 +15,10 @@ const environment = {
 }
 
 const backendId = (env) => env === environment.production ? '0462' : 'development'
-const deviceId = () => process.argv.slice(2).length == 0 ? macAddress() : process.env.COMPUTERNAME.toString().trim()
+const deviceId = () => process.argv.slice(2).length === 0 ? macAddress() : process.env.COMPUTERNAME.toString().trim()
 
 const run = (env) => {
-    const configManager = ConfigurationManager(backendId(), deviceId())
+    const configManager = ConfigurationManager(backendId(env), deviceId())
     const mqtt = Mqtt(configManager.getMqttConfig())
     const upLinkHandler = UpLinkHandler(mqtt, configManager.getMqttConfig().topics)
     let scanner;
@@ -78,17 +78,17 @@ const run = (env) => {
 
 exec('git branch --show-current', (err, stdout, stderr) => {
     if (err || stderr) {
-        console.log('Git branch not found. Starting with development settings.')
+        logToConsole(MessageLevel.warning, 'Git branch not found. Starting with development settings.')
         run(environment.development)
     }
 
     if (typeof stdout === 'string') {
       if (stdout.trim() === 'main') {
-        console.log('Starting with production settings.');
+        logToConsole(MessageLevel.info, 'Starting with production settings.');
         run(environment.production)
       } 
       else {
-        console.log(`On branch: ${stdout.trim()} - Starting with development settings.`);
+        logToConsole(MessageLevel.info, `On branch: ${stdout.trim()} - Starting with development settings.`);
         run(environment.development)
       }
     }
