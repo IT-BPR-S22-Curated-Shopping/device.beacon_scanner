@@ -15,9 +15,9 @@ const environment = {
     development: 'development'
 }
 
-const envSettings = (env) => {
+const envSettings = (env, BLE) => {
     let s = settings
-    s.deviceId = process.argv.slice(2).length === 0 ? macAddress() : process.env.COMPUTERNAME.toString().trim()
+    s.deviceId = BLE ? macAddress() : process.env.COMPUTERNAME.toString().trim()
     if (env === environment.development) {
         s.backendId = environment.development
     }
@@ -25,11 +25,12 @@ const envSettings = (env) => {
 } 
 
 const run = (env) => {
-    const configManager = ConfigurationManager(envSettings(env))
+    const bleEnabled = process.argv.slice(2).length === 0
+    const configManager = ConfigurationManager(envSettings(env, bleEnabled))
     const mqtt = Mqtt(configManager.getMqttConfig())
     const upLinkHandler = UpLinkHandler(mqtt, configManager.getMqttConfig().topics)
     let scanner;
-    if (env === environment.production) { scanner = BLEScanner(configManager, upLinkHandler) }
+    if (bleEnabled) { scanner = BLEScanner(configManager, upLinkHandler) }
 
     mqtt.client().on("error", (error) => {
         logToConsole(MessageLevel.error, `MQTT unable to connect: ${error}`)
@@ -54,10 +55,12 @@ const run = (env) => {
                 break
             case mqtt.topics().device.command:
                 if (msg.instruction === Commands.activate) {
-                    if (scanner) { scanner.activate() }
+                    if (bleEnabled) { scanner.activate() }
+                    else { logToConsole(MessageLevel.warning, 'Device recieved instruction: ' + msg.instruction) }
                 }
                 else if (msg.instruction === Commands.deactivate) {
-                    if (scanner) { scanner.deactivate() }
+                    if (bleEnabled) { scanner.deactivate() }
+                    else { logToConsole(MessageLevel.warning, 'Device recieved instruction: ' + msg.instruction) }
                 }
                 else if (msg.instruction === Commands.ready) {
                     upLinkHandler.sendStatus(true)
