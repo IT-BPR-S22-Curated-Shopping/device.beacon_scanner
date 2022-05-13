@@ -1,31 +1,30 @@
-import settings from '../settings.json' assert {type: "json"}
 import credentials from '../local.credentials.json' assert {type: "json"}
 import { MessageLevel } from "../utils/MessageLevel.js";
 
-function ConfigurationManager(backendId, deviceId) {
+function ConfigurationManager(settings) {
     const state = {
-        appId: backendId,
+        appId: settings.backendId,
         companyId: settings.companyId,
-        deviceId: deviceId,
+        deviceId: settings.deviceId,
         mqttConfig: {
             topics: {
                 device: {
-                    config: `${settings.companyId}/${deviceId}/${settings.mqttConfig.topics.device.configuration}`,
-                    command: `${settings.companyId}/${deviceId}/${settings.mqttConfig.topics.device.command}`,
-                    status: `${settings.companyId}/${deviceId}/${settings.mqttConfig.topics.device.status}`,
-                    telemetry: `${settings.companyId}/${deviceId}/${settings.mqttConfig.topics.device.telemetry}`,
-                    detection: `${settings.companyId}/${deviceId}/${settings.mqttConfig.topics.device.detection}`
+                    config: `${settings.companyId}/${settings.deviceId}/${settings.mqttConfig.topics.device.configuration}`,
+                    command: `${settings.companyId}/${settings.deviceId}/${settings.mqttConfig.topics.device.command}`,
+                    status: `${settings.companyId}/${settings.deviceId}/${settings.mqttConfig.topics.device.status}`,
+                    telemetry: `${settings.companyId}/${settings.deviceId}/${settings.mqttConfig.topics.device.telemetry}`,
+                    detection: `${settings.companyId}/${settings.deviceId}/${settings.mqttConfig.topics.device.detection}`
                 },
                 backend: {
-                    hello: `${backendId}/${settings.mqttConfig.topics.backend.hello}`,
-                    status: `${backendId}/${settings.mqttConfig.topics.backend.status}`
+                    hello: `${settings.backendId}/${settings.mqttConfig.topics.backend.hello}`,
+                    status: `${settings.backendId}/${settings.mqttConfig.topics.backend.status}`
                 }
             },
             options: {
                 host: settings.mqttConfig.host,
                 port: settings.mqttConfig.port,
                 protocol: settings.mqttConfig.protocol,
-                clientId: deviceId,
+                clientId: settings.deviceId,
                 username: credentials.mqtt.username,
                 password: credentials.mqtt.password,
                 reconnect: true,
@@ -33,7 +32,7 @@ function ConfigurationManager(backendId, deviceId) {
                 keepAlive: settings.mqttConfig.keepAlive,
                 clean: true,
                 will: {
-                    topic: `${settings.companyId}/${deviceId}/${settings.mqttConfig.topics.device.status}`,
+                    topic: `${settings.companyId}/${settings.deviceId}/${settings.mqttConfig.topics.device.status}`,
                     payload: JSON.stringify({ online: false }),
                     qos: 2,
                     retain: false

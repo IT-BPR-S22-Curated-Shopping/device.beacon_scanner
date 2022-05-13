@@ -1,5 +1,6 @@
 {
     "companyId": "010d2108",
+    "backendId": "0462",
     "scannerConfig": {
         "range": {
             "unit": "rssi",

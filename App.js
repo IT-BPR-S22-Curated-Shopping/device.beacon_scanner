@@ -1,4 +1,5 @@
 import { exec } from "child_process"
+import settings from './settings.json' assert {type: "json"}
 import ConfigurationManager from "./configuration/ConfigurationManager.js";
 import Mqtt from "./mqtt/Mqtt.js";
 import UpLinkHandler from "./mqtt/UpLinkHandler.js"
@@ -10,15 +11,22 @@ import { Commands } from "./utils/Commands.js";
 import { hello } from "./models/Hello.js"
 
 const environment = {
-    production: 'prod',
-    development: 'dev'
+    production: 'production',
+    development: 'development'
 }
 
-const backendId = (env) => env === environment.production ? '0462' : 'development'
-const deviceId = () => process.argv.slice(2).length === 0 ? macAddress() : process.env.COMPUTERNAME.toString().trim()
+const envSettings = (env) => {
+    let s = settings
+    s.deviceId = process.argv.slice(2).length === 0 ? macAddress() : process.env.COMPUTERNAME.toString().trim()
+    if (env === environment.development) {
+        s.companyId = environment.development
+        s.backendId = environment.development
+    }
+    return s
+} 
 
 const run = (env) => {
-    const configManager = ConfigurationManager(backendId(env), deviceId())
+    const configManager = ConfigurationManager(envSettings(env))
     const mqtt = Mqtt(configManager.getMqttConfig())
     const upLinkHandler = UpLinkHandler(mqtt, configManager.getMqttConfig().topics)
     let scanner;
