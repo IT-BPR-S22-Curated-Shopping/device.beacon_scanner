@@ -19,7 +19,6 @@ const envSettings = (env) => {
     let s = settings
     s.deviceId = process.argv.slice(2).length === 0 ? macAddress() : process.env.COMPUTERNAME.toString().trim()
     if (env === environment.development) {
-        s.companyId = environment.development
         s.backendId = environment.development
     }
     return s
