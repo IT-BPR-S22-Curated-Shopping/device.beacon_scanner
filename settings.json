@@ -25,7 +25,8 @@
                 "status": "status",
                 "telemetry": "telemetry",
                 "command": "command",
-                "detection": "detection"
+                "detection": "detection",
+                "error": "error"
             },
             "backend": {
                 "status": "backend/status",

@@ -1,5 +1,6 @@
 import credentials from '../local.credentials.json' assert {type: "json"}
 import { MessageLevel } from "../utils/MessageLevel.js";
+import { status } from '../utils/Status.js';
 
 function ConfigurationManager(settings) {
     const state = {
@@ -9,6 +10,7 @@ function ConfigurationManager(settings) {
         mqttConfig: {
             topics: {
                 device: {
+                    error: `${settings.companyId}/${settings.deviceId}/${settings.mqttConfig.topics.device.error}`,
                     config: `${settings.companyId}/${settings.deviceId}/${settings.mqttConfig.topics.device.configuration}`,
                     command: `${settings.companyId}/${settings.deviceId}/${settings.mqttConfig.topics.device.command}`,
                     status: `${settings.companyId}/${settings.deviceId}/${settings.mqttConfig.topics.device.status}`,
@@ -33,7 +35,7 @@ function ConfigurationManager(settings) {
                 clean: true,
                 will: {
                     topic: `${settings.companyId}/${settings.deviceId}/${settings.mqttConfig.topics.device.status}`,
-                    payload: JSON.stringify({ online: false }),
+                    payload: JSON.stringify({ state: status.offline }),
                     qos: 2,
                     retain: false
                 }

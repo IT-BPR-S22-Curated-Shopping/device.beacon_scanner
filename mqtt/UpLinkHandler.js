@@ -1,18 +1,33 @@
 function UpLinkHandler(mqtt) {
-    const sendStatus = (isOnline) => mqtt.publish(mqtt.topics().device.status, 
+    const sendStatus = (deviceState) => mqtt.publish(
+        mqtt.topics().device.status, 
         {
-            online: isOnline
+            state: deviceState
         }
     )
-    const sendTelemetry = (lvl, msg) => mqtt.publish(mqtt.topics().device.telemetry,
+    const sendTelemetry = (lvl, msg) => mqtt.publish(
+        mqtt.topics().device.telemetry,
         {
             level: lvl,
             message: msg
         }
     )
-    const sendBeacon = (beacon) => mqtt.publish(mqtt.topics().device.detection, beacon)
+    const sendBeacon = (beacon) => mqtt.publish(
+        mqtt.topics().device.detection,
+        beacon
+    )
+    const sendHello = (companyId, deviceId) => mqtt.publish(
+        mqtt.topics().backend.hello,
+        { 
+            company: companyId, 
+            device: { 
+                id: deviceId,
+                type: "BLE"
+            }
+        }
+    )
 
-    return { sendStatus, sendTelemetry, sendBeacon }
+    return { sendStatus, sendTelemetry, sendBeacon, sendHello }
 }
 
 export default UpLinkHandler
