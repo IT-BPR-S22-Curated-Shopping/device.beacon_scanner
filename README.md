@@ -1,6 +1,12 @@
 # Raspberry Pi iBeacon Scanner
 Node app for detecting BLE iBeacon presense.
 
+## Dependencies 
+https://github.com/futomi/node-beacon-scanner
+
+https://github.com/mqttjs
+
+
 ## Requirements
 
 * Raspberry Pi

@@ -1,13 +1,22 @@
 import Beacon from "./Beacon";
 import ConfigurationManager from "../configuration/ConfigurationManager";
+import settings from '../settings.json' assert {type: "json"}
 
 let b;
 let c;
 const uuid = '010D2108-0462-4F97-BAB8-000000000004';
 const rssi = 80;
 
+const testSettings = () => {
+    let s = settings
+    s.deviceId = 'test'
+    s.backendId = "id"
+    
+    return s
+} 
+
 beforeEach(() => {
-    c = ConfigurationManager();
+    c = ConfigurationManager(testSettings());
     b = Beacon(uuid, "mac", 78, 40, rssi, 2, c.getScannerConfig().noiseFilter);
 });
 

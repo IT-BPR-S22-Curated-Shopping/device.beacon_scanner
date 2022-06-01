@@ -4,8 +4,15 @@ import ConfigurationManager from './ConfigurationManager'
 
 let configManager
 
+const testSettings = () => {
+    let s = settings
+    s.deviceId = 'test'
+    s.backendId = "id"
+    return s
+} 
+
 beforeEach(() => {
-    configManager = ConfigurationManager("id");
+    configManager = ConfigurationManager(testSettings());
 });
 
 test('MQTT options host', () => {
